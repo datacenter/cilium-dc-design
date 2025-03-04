@@ -51,7 +51,7 @@ Cilium BGP Control Plane high-level cluster topology
 ![alt text](../images/BGP-Control-Plane-flow.png)
 Cilium BGP Control Plane traffic flows
 
-Refer to the [ACI BGP Design](#aci-bgp-design) section for details on how to configure ACI.
+Refer to the [ACI BGP Design](../aci_design/) section for details on how to configure ACI.
 
 ## Cilium BGP design
 
@@ -66,7 +66,7 @@ Depending on the cluster scale and application requirements, dedicated `ingress 
 
 * Specialized hardware: not all the nodes in a Kubernetes clusters need to be the same; specialized high-performance hardware can be utilized for our `ingress nodes`. For example, thanks to [CiliumNodeConfig](https://docs.cilium.io/en/latest/configuration/per-node-config/#per-node-configuration), we can deploy bare-metal nodes with either Mellanox or Intel network interface cards and achieve 100+ Gbps throughput per ingress node, thanks to [Cilium Big TCP](https://docs.cilium.io/en/stable/operations/performance/tuning/#ipv4-big-tcp) capability.
 
-Refer to the [Example configuration](#example-configuration) section of this document for implementation details.
+Refer to the [Example configuration](../examples/examples/) section of this document for implementation details.
 
 ## Cilium Egress design
 

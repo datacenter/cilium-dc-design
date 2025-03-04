@@ -1,5 +1,6 @@
 ---
 title: Advanced Design Config Example
+parent: Config Example
 layout: default
 ---
 

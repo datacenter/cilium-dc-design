@@ -68,20 +68,20 @@ This design document outlines two potential approaches to achieving our networki
 ### Advanced Design with Maglev for ECMP Flow Consistency
 * Objectives: 
   * Utilize ACI for External Service LoadBalancing
-    * Maximize network performance and ensure consistent flow distribution in ECMP scenarios with [MagLev](#maglev).
+    * Maximize network performance and ensure consistent flow distribution in ECMP scenarios with [MagLev](docs/cilium/#maglev).
   * Utilize ACI Contract for macro segmentation for North-South Traffic
   * Approach: 
     * All Nodes are deployed in a L3OUT
       * Use a `Node` External EPG to secure node initiated traffic
       * Use one External EPG per External Service for North-South traffic accessing services.
-      * Leverage [Maglev hashing](#maglev) to maintain ECMP flow consistency. It is suited for environments requiring optimal load distribution and performance. Magles adds the requiremets for the following features:
+      * Leverage [Maglev hashing](docs/cilium/#maglev) to maintain ECMP flow consistency. It is suited for environments requiring optimal load distribution and performance. Magles adds the requiremets for the following features:
       * Direct Server Return: ensuring the return traffic follows the optimal traffic path increasing performances
     * Native routing mode: Since all the nodes share the same L2 Domain (the Floating SVI) POD to POD traffic can be directly routed
   * Dedicated Egress nodes, with the Egress IP(s) mapped into an ESG
 * Benefits: Improved flow consistency, enhanced network utilization, and better handling of dynamic traffic patterns.
 * Considerations:
   * Increased complexity in setup and management, with a steeper learning curve for configuration and maintenance.
-  * ACI 6.1.2 or newer is required see [Pre ACI 6.1(2) Limitation](#pre-aci-612-limitation)
+  * ACI 6.1.2 or newer is required see [Pre ACI 6.1(2) Limitation](docs/cilium/#pre-aci-612-limitation)
 * 
 ## Required knowledge
 

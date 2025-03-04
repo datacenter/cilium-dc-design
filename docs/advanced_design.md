@@ -31,7 +31,7 @@ This basic design gives us the following capabilities:
 * Routing simplicity: the node default gateway is the ACI Floating SVI IP.
   * No need to advertise the POD subnet to ACI
 * BGP based ECMP for External K8s service Load Balancing with Resilient Hashing
-* Near optimal traffic flows thanks to [Direct Server Return](#direct-server-return)
+* Near optimal traffic flows thanks to [Direct Server Return](../cilium/#direct-server-return)
 
 ## Cluster L3OUT physical connectivity
 
@@ -73,7 +73,7 @@ To ensure route symmetry we can:
 
 When it comes to the Cilium Egress design, the only real decisions to make is how many `egress nodes` to deploy and whether to dedicate them only for this purpose.
 Ideally, the design should have a minimum of two `egress nodes` distributed between two pairs of leaves. This will provide redundancy in case of `egress nodes` or ACI leaf failure or during upgrades.
-Depending on the cluster scale and application requirements, dedicated `egress nodes` could be beneficial for the same reasons discussed in the [Cilium BGP design](#cilium-bgp-design) section.
+Depending on the cluster scale and application requirements, dedicated `egress nodes` could be beneficial for the same reasons discussed in the [Cilium BGP design](../simplicity_design/#cilium-bgp-design) section of the Simple design. 
 
 ## Design trade offs
 
