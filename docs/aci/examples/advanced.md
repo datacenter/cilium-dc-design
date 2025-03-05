@@ -159,8 +159,6 @@ spec:
         enabled: true
       egressGatewayHA:
         enabled: true
-    egressGateway:
-      enabled: true
     k8sServiceHost: api-int.ocp-cilium-c1.cam.ciscolabs.com
     k8sServicePort: 6443
     kubeProxyReplacement: true

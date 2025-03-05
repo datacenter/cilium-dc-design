@@ -21,6 +21,9 @@ Endpoint Routes enables direct routing to the `veth` pairs without requiring to 
 
 This configuration aligns with Cilium's ethos of providing high-performance, scalable, and simple networking for Kubernetes environments. By integrating closely with the Linux kernel's routing capabilities, Cilium can offer robust networking solutions without necessitating complex configurations or additional network infrastructure.
 
+{: .warning}
+This design is intended to address 90% of common use cases. However, if your cluster scales beyond 1,000 nodes, adjustments to the design may be necessary. In such cases, we strongly encourage you to contact Isovalent for guidance and support.
+
 ### Cilium BGP Control Plane
 
 Cilium BGP Control Plane [Enterprise](https://docs.isovalent.com/configuration-guide/networking/bgpv2/index.html) or [OSS](https://docs.cilium.io/en/stable/network/bgp-control-plane/bgp-control-plane/) provides a way for Cilium to advertise routes to connected routers by using the Border Gateway Protocol (BGP). Cilium BGP Control Plane makes pod networks and/or load-balancer services of type LoadBalancer reachable from outside the cluster for environments that support BGP. In Cilium, the BGP Control Plane does not program the Linux host data path, so it cannot be used to establish IP reachability within the cluster or to external IPs.
@@ -41,7 +44,7 @@ The majority of drivers supporting 10G or higher rates also support native XDP o
 
 ## Advanced Design Only Features
 
-### MagLev
+### Maglev
 
 Incorporating advanced load balancing mechanisms into Kubernetes clusters is essential for maintaining optimal performance and efficient resource utilization. The integration of Cilium with Maglev hashing provides a robust solution for consistent and efficient load distribution, particularly in scenarios involving Equal-Cost Multi-Path (ECMP) routing.
 
@@ -55,7 +58,7 @@ This is particularly important for any network fabric that don't support ECMP Re
 
 To successfully implement Maglev hashing within a Kubernetes environment using Cilium, a key requirement is that Kubernetes nodes can select the Pod IP as the destination IP for traffic routing. This capability is crucial for maintaining consistent and efficient load balancing across the network. Additionally, for optimal performance and reduced latency, the node where the Pod resides should be able to reply directly back to the network. This direct response mechanism requires the implementation of Direct Server Return (DSR).
 
-[This](https://cilium.io/blog/2020/11/10/cilium-19/) blog details explore MagLev in details.
+[This](https://cilium.io/blog/2020/11/10/cilium-19/) blog details explore Maglev in details.
 
 ### Direct Server Return
 

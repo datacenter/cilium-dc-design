@@ -166,8 +166,6 @@ enterprise:
     enabled: true
   egressGatewayHA:
     enabled: true
-egressGateway:
-  enabled: true
 hubble:
   relay:
     enabled: true

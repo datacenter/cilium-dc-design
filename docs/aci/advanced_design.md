@@ -48,7 +48,7 @@ Centralized Routing
 ### ECMP Considerations
 
 * ACI installs up to 16 eBGP/iBGP ECMP paths. If more than 16 `nodes` are peering via BGP, ACI can be configured to install up to 64 ECMP paths.
-* MagLev and DSR requires the `externalTrafficPolicy` set to `Cluster`: This means that that every node that peers with ACI over BGP will advertise itself as a valid next hop for every exposed Service.
+* Maglev and DSR requires the `externalTrafficPolicy` set to `Cluster`: This means that that every node that peers with ACI over BGP will advertise itself as a valid next hop for every exposed Service.
 * The ECMP selection algorithm will install up to the configured number of ECMP per exposed service. If there are more ECMP paths available ACI will randomly ***(Not sure need to triple check)*** select next-hops with the same Metric. This means that even if not all the nodes can be used for the same service there should still be a good distribution of the traffic load over all the nodes running BGP. Furthermore since DSR is used the response is sent directly back to the client from the pod, bypassing the original node that received the request. 
 
 {: .note }
@@ -60,6 +60,10 @@ These nodes will be configured with two interfaces a node interface and an egres
 * The node interface will be placed in the L3OUT to simplify node-to-node communication.
   * It is not required for the `egress nodes` to peer over BGP if they are only used for Egress Traffic.
 * The egress interface will be connected to an EPG and will be used for the egress gateway feature for POD initiated traffic. 
+
+{: .note }
+For the nodes with Multiple interface is fundamental to ensure that the kubelet’s node-ip is set correctly on each node. In the Advanced Design this has to be the Interface placed in the ACI L3OUT.
+Cilium does not have the ability to chose which interface is used for pod to pod E/W routing and will use the kubelet’s node-ip one.
 
 By default traffic received on the egress nodes from the EPG would be returned to the client via the L3OUT Interface resulting in traffic drops.
 To ensure return traffic is routed back to the EPG we can:
@@ -78,7 +82,7 @@ To ensure return traffic is routed back to the EPG we can:
 
 This design aims to provide you with an easy and high scalable design; however, it comes with the following drawbacks:
 
-1. External services can only be advertised as “Cluster Scope”: This requirement is imposed by MagLev. This drawback is however of minor consequence thanks for Direct Server Return. 
+1. External services can only be advertised as “Cluster Scope”: This requirement is imposed by Maglev. This drawback is however of minor consequence thanks for Direct Server Return. 
 2. Potential bottle necks for egress traffic
 3. Node IP is "hidden" behind a L3OUT so there is a small loss of visibility compared to the Simplicity first design.
 

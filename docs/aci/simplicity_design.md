@@ -21,6 +21,10 @@ The basic network infrastructure for our design will be composed of the followin
 This basic design gives us the following capabilities:
 
 * Secure the traffic initiated by the Kubernetes nodes with ACI contracts.
+
+    {: .note }
+    Cilium offers the capability to implement micro-segmentation rules (via [CiliumNetworkPolicies](https://docs.cilium.io/en/latest/security/policy/index.html)) directly within the cluster. However, the specifics of its design and configuration fall outside the scope of this document.
+
 * Secure the traffic initiated by POD natted to an Egress IP with ACI contracts.
 * DHCP relay support: This design allows the Kubernetes nodes to be bootstrapped without the need to manually configure their IP addresses easing the cluster bootstrap and horizontal scalability. 
 
@@ -58,6 +62,11 @@ To ensure return traffic is routed back to the L3OUT we can:
 
 ![alt text](../images/BGP-Control-Plane-flow.png)
 Cilium BGP Control Plane traffic flows
+
+{: .note }
+For the nodes with Multiple interface is fundamental to ensure that the kubelet’s node-ip is set correctly on each node. In the Simplicity Design this has to be the Interface placed in the ACI EPG.
+Cilium does not have the ability to chose which interface is used for pod to pod E/W routing and will use the kubelet’s node-ip one.
+
 
 Refer to the [ACI BGP Design](/cilium-dc-design/docs/aci/aci_bgp_design/) section for details on how to configure ACI.
 

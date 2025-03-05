@@ -49,7 +49,13 @@ Cilium is widely adopted in cloud-native environments for its ability to enhance
 
 ## Isovalent 
 
-Isovalent (now part of Cisco) is a company that specializes in providing advanced networking and security solutions for cloud-native environments. It is the primary developer and maintainer of Cilium.
+As the creator of eBPF, Cilium, and Tetragon, Isovalent has become a cornerstone of innovation in cloud-native ecosystems. All major cloud providers have adopted Isovalent’s technologies, making it the de-facto standard for cloud-native networking and security.  
+
+The Isovalent Enterprise Platform delivers advanced Networking, Security, and Observability solutions for Kubernetes and cloud-native environments.  
+
+Isovalent joined Cisco via acquisition in April 2024. 
+
+The Isovalent Platform is trusted by enterprises such as Goldman Sachs, J.P. Morgan Chase, UBS, and S&P Global, as well as technology leaders like Databricks, Adobe, and Confluent, and some of the leading AI Large Language Model (LLM) providers. 
 
 ## Cilium vs Cilium Enterprise
 
@@ -77,10 +83,15 @@ Where Enterprise features are used they will be called out and if possible an al
 The design goals for our Kubernetes networking solution focus on addressing the critical challenges faced by administrators when managing traffic flow and ensuring secure connectivity within and outside the Kubernetes cluster. Our approach is to implement a robust and scalable load-balancing strategy coupled with a secure networking model that bridges the gap between containerized applications and external non-containerized systems.
 
 ## Two Designs
-This design document outlines two potential approaches to achieving our networking objectives. Each option has been crafted to cater to different priorities and operational considerations. Regardless of the options you choose both design can provide you with the following outcome:
+This design document outlines two potential approaches to achieving our networking objectives. Each option has been crafted to cater to different priorities and operational considerations. 
+
+Regardless of the options you choose **both** design can provide you with the following outcome:
 
 * High Performance
-  * By using [Native Routing](https://docs.cilium.io/en/stable/network/concepts/routing/#native-routing) it is possible to increase the networking stack performances by removing the the Nodep-to-Node overlay as well as enabling advanced features like [BigTCP](https://docs.cilium.io/en/stable/operations/performance/tuning/#ipv4-big-tcp) or `endpoint routes` to bypass the `cilium_host` interface for added performance.
+  * By using [Native Routing](https://docs.cilium.io/en/stable/network/concepts/routing/#native-routing) it is possible to increase the networking stack performances by removing the the Node-to-Node overlay as well as enabling advanced features like [BigTCP](https://docs.cilium.io/en/stable/operations/performance/tuning/#ipv4-big-tcp) or `endpoint routes` to bypass the `cilium_host` interface for added performance.
+  
+  {: .note }
+  BigTCP is currently in beta and should not yet be enabled for production workloads however this design is ready for it and once it goes limited/stable can be enabled with a simple config flag.
 
 * Efficient load balancing:
   * load-balancing mechanism that effectively distributes external client traffic to services within the Kubernetes cluster
@@ -90,7 +101,7 @@ This design document outlines two potential approaches to achieving our networki
     * The load balancer IP is mapped to an ACI external Endpoint Group (external EPG) to facilitate the enforcement of security policies through ACI contracts
 
 * Pod identity
-  * With the [Egress Gateway](https://docs.cilium.io/en/stable/network/egress-gateway/egress-gateway/) feature it's possible to masqueraded POD traffic leaving the cluster with predictable IPs associated with the gateway nodes. As an example, this feature can be used in combination with legacy firewalls to allow traffic to legacy infrastructure only from specific pods within a given namespace.
+  * With the [Egress Gateway](https://docs.cilium.io/en/stable/network/egress-gateway/egress-gateway/) feature it's possible to masquerade POD traffic leaving the cluster with predictable IPs associated with the gateway nodes. As an example, this feature can be used in combination with legacy firewalls to allow traffic to legacy infrastructure only from specific pods within a given namespace.
 
 * DHCP relay support:
   * This will ensure it is easy to bootstrap and horizontally scale a given cluster.
@@ -117,7 +128,7 @@ This design document outlines two potential approaches to achieving our networki
 ### Advanced Design with Maglev for ECMP Flow Consistency
 
 * Objectives: 
-  * Maximize network performance and ensure consistent flow distribution in ECMP scenarios with [MagLev](docs/fabric_agnostic_features/#maglev).
+  * Maximize network performance and ensure consistent flow distribution in ECMP scenarios with [Maglev](docs/fabric_agnostic_features/#maglev).
   * Utilize ACI Contract for macro segmentation for North-South Traffic
   * Approach: 
     * All Nodes are deployed in a L3OUT
