@@ -91,5 +91,5 @@ To protect the ACI system against potential Kubernetes BGP misconfigurations, th
 * (Optional) Set a limit on the number of received prefixes from the nodes.
 
 
-[Next](/docs/aci/examples/advanced/){: .btn }
+[Next](/cilium-dc-design/docs/aci/examples/advanced/){: .btn }
 {: .text-right }

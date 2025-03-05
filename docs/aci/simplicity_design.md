@@ -59,7 +59,7 @@ To ensure return traffic is routed back to the L3OUT we can:
 ![alt text](../images/BGP-Control-Plane-flow.png)
 Cilium BGP Control Plane traffic flows
 
-Refer to the [ACI BGP Design](/docs/aci/aci_bgp_design/) section for details on how to configure ACI.
+Refer to the [ACI BGP Design](/cilium-dc-design/docs/aci/aci_bgp_design/) section for details on how to configure ACI.
 
 ## Cilium BGP design
 
@@ -90,5 +90,5 @@ For issue (1) there is no solution; this is a trade-off we make to achieve a mor
 
 Issue (3) can be addressed with Cilium Egress Gateway.
 
-[Next](/docs/aci/advanced_design/){: .btn }
+[Next](/cilium-dc-design/docs/aci/advanced_design/){: .btn }
 {: .text-right }

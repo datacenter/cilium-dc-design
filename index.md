@@ -91,7 +91,7 @@ This design document outlines two potential approaches to achieving our networki
   * This will ensure it is easy to bootstrap and horizontally scale a given cluster.
 
   {: .warning } 
-  DHCP Replay has limitation when used on an ACI L3OUT See: [DHCP Limitations](https://www.cisco.com/c/en/us/td/docs/dcn/aci/apic/6x/basic-configuration/cisco-apic-basic-configuration-guide-61x/provisioning-core-aci-fabric-services-61x.html#guidelines-and-limitations-for-a-dhcp-relay-policy)
+  DHCP Replay has limitation when used on an ACI L3OUT See: [DHCP Limitations](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/basic-configuration/cisco-apic-basic-configuration-guide-61x/provisioning-core-aci-fabric-services-61x.html#guidelines-and-limitations-for-a-dhcp-relay-policy)
 
 ### Simplicity-First Approach Design
 * Objectives: 
@@ -128,5 +128,5 @@ This design document outlines two potential approaches to achieving our networki
   * Node IP visibility is lost as they are placed in an L3OUT
 
 
-[Next](/docs/fabric_agnostic_features/){: .btn }
+[Next](/cilium-dc-design/docs/fabric_agnostic_features/){: .btn }
 {: .text-right }

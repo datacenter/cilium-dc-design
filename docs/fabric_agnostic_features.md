@@ -68,5 +68,5 @@ The DSR mode provides two key benefits:
 
 Overall, enabling DSR in Cilium optimizes network traffic flow, enhances security, and ensures more efficient resource usage within the Kubernetes cluster. It's a strategic choice for environments where performance and accurate client identification are priorities.
 
-[Next](/docs/aci/aci_designs/){: .btn }
+[Next](/cilium-dc-design/docs/aci/aci_designs/){: .btn }
 {: .text-right }

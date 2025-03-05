@@ -424,5 +424,5 @@ spec:
 
 It is easy now to add these 2 IP in an ESG selector and use ACI contracts to enforce security policy for all traffic initiated by PODs in the `namespace: egress-1`
 
-[Next](/docs/aci/examples/simple/){: .btn }
+[Next](/cilium-dc-design/docs/aci/examples/simple/){: .btn }
 {: .text-right }

@@ -24,13 +24,13 @@ This basic design gives us the following capabilities:
 * DHCP relay support: This design allows the Kubernetes nodes to be bootstrapped without the need to manually configure their IP addresses easing the cluster bootstrap and horizontal scalability. 
 
   {: .warning } 
-  DHCP relay on L3OUT has a few limitations see: [DHCP Limitations](https://www.cisco.com/c/en/us/td/docs/dcn/aci/apic/6x/basic-configuration/cisco-apic-basic-configuration-guide-61x/provisioning-core-aci-fabric-services-61x.html#guidelines-and-limitations-for-a-dhcp-relay-policy)
+  DHCP relay on L3OUT has a few limitations see: [DHCP Limitations](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/basic-configuration/cisco-apic-basic-configuration-guide-61x/provisioning-core-aci-fabric-services-61x.html#guidelines-and-limitations-for-a-dhcp-relay-policy)
 
 * The nodes can be of any type and can be mixed: you can have a cluster composed of bare-metal hosts and VMs running on any hypervisor as long as network connectivity is provided.
 * Routing simplicity: the node default gateway is the ACI Floating SVI IP.
 * No need to advertise the POD subnet to ACI
 * BGP based ECMP for External K8s service Load Balancing with Resilient Hashing
-* Near optimal traffic flows thanks to [Direct Server Return](/docs/fabric_agnostic_features/#direct-server-return)
+* Near optimal traffic flows thanks to [Direct Server Return](/cilium-dc-design/docs/fabric_agnostic_features/#direct-server-return)
 
 ## Cluster L3OUT physical connectivity
 
@@ -39,7 +39,7 @@ There is no strict requirement of the physical connectivity for the cluster EPG 
 ## BGP design
 **Centralized BGP peering for service advertisement**
 
-In order to keep the BGP configuration as simple as possible instead of peering with local leaf switches, all of the Kubernetes nodes will peer with one pair of switches (anchor leaf switches). This simplifies the configuration of the physical network and Cilium. At the time of writing ACI 6.1 [supports](https://www.cisco.com/c/en/us/td/docs/dcn/aci/apic/6x/verified-scalability/cisco-aci-verified-scalability-guide-612.html) up to 2000 BGP peers per leaf. It is unlikely that this will pose a scale issue for a single Kubernetes cluster. 
+In order to keep the BGP configuration as simple as possible instead of peering with local leaf switches, all of the Kubernetes nodes will peer with one pair of switches (anchor leaf switches). This simplifies the configuration of the physical network and Cilium. At the time of writing ACI 6.1 [supports](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/verified-scalability/cisco-aci-verified-scalability-guide-612.html) up to 2000 BGP peers per leaf. It is unlikely that this will pose a scale issue for a single Kubernetes cluster. 
 In case Multiple Clusters are running on the same fabric it is easier to spread then over differ anchor nodes as this will not have an impact on the configuration complexity of the cluster. 
 
 ![Centralized Routing](../images/centralized-routing.png)
@@ -84,5 +84,5 @@ This design aims to provide you with an easy and high scalable design; however, 
 
 For issue (1) there is no solution. Issue (2) can be easily addressed with either vertical or horizontal scaling.
 
-[Next](/docs/aci/aci_bgp_design/){: .btn }
+[Next](/cilium-dc-design/docs/aci/aci_bgp_design/){: .btn }
 {: .text-right }
