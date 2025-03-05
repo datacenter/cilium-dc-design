@@ -3,6 +3,11 @@ title: Isovalent and Cisco DC Fabrics
 layout: default
 nav_order: 1
 ---
+
+{: .warning }
+Disclaimer:
+This design document is currently under review and is subject to change. The information contained herein is preliminary and may be updated or modified as the review process progresses. 
+
 # Introduction
 {: .no_toc }
 
