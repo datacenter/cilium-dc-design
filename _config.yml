@@ -1,9 +1,9 @@
 title: Cilium and Cisco DC Fabrics
 description: Best practice designs for Cilium Enterprise and Cisco DataCenter Fabrics
 theme: just-the-docs
-url: https://datacenter.github.io/cilium-dc-design
+url: https://datacenter.github.io/cilium-dc-design/
 aux_links:
-  Source Code: https://github.com/datacenter/cilium-dc-design
+  Source Code: https://datacenter.github.io/cilium-dc-design/
 
 permalink: pretty
 enable_copy_code_button: true
