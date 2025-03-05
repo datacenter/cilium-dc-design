@@ -1,7 +1,7 @@
 ---
 title: Advanced Design
 layout: default
-parent: Cilium Designs
+parent: ACI Designs
 nav_order: 2
 ---
 
@@ -11,12 +11,11 @@ The basic network infrastructure for our design will be composed of the followin
 
 * A tenant: The Kubernetes cluster can be placed in any dedicated, pre-existing between multiple clusters, etc.
 * One Floating SVI L3Out where:
-  * All the nodes are placed in this L3OUT
+  * All the nodes are placed in this L3OUT that provides also a L2 Broadcast domain for Node-to-Node Communication
   * Dedicated Node Ext EPGs and Service EPGs are used for traffic classification and security with ACI Contracts
   * BGP Peering is established with all or a subset of the nodes for External Service advertisement and LoadBalancing
-  * It provides a single L2 Broadcast domain for Node-to-Node Communication
 
-* One Bridge Domain (BD) for the Kubernetes Egress Nodes
+* One Bridge Domain (BD) for the Egress Nodes
   * Create one EPG and Multiples ESG for the Kubernetes Egress Nodes interface. The ESG selector will be the `Egress IP` so that we can map different pod identities to different ACI ESGs.
 
 This basic design gives us the following capabilities:
@@ -29,9 +28,9 @@ This basic design gives us the following capabilities:
 
 * The nodes can be of any type and can be mixed: you can have a cluster composed of bare-metal hosts and VMs running on any hypervisor as long as network connectivity is provided.
 * Routing simplicity: the node default gateway is the ACI Floating SVI IP.
-  * No need to advertise the POD subnet to ACI
+* No need to advertise the POD subnet to ACI
 * BGP based ECMP for External K8s service Load Balancing with Resilient Hashing
-* Near optimal traffic flows thanks to [Direct Server Return](../cilium/#direct-server-return)
+* Near optimal traffic flows thanks to [Direct Server Return](/docs/fabric_agnostic_features/#direct-server-return)
 
 ## Cluster L3OUT physical connectivity
 
@@ -52,16 +51,19 @@ Centralized Routing
 * MagLev and DSR requires the `externalTrafficPolicy` set to `Cluster`: This means that that every node that peers with ACI over BGP will advertise itself as a valid next hop for every exposed Service.
 * The ECMP selection algorithm will install up to the configured number of ECMP per exposed service. If there are more ECMP paths available ACI will randomly ***(Not sure need to triple check)*** select next-hops with the same Metric. This means that even if not all the nodes can be used for the same service there should still be a good distribution of the traffic load over all the nodes running BGP. Furthermore since DSR is used the response is sent directly back to the client from the pod, bypassing the original node that received the request. 
 
-**Note:** This architecture requires ACI 6.1.2 or above as the Propagate Next Hop and Ignore AM features are both needed 
+{: .note }
+This architecture requires ACI 6.1.2 or above as the Propagate Next Hop and Ignore AM features are both needed 
 
 ## Egress Nodes
 
-These nodes will be configured with two interfaces a node interface and an egress one.:
-* The node interface will be placed in the floating SVI, this it simplifies node-to-node communication.
+These nodes will be configured with two interfaces a node interface and an egress one:
+* The node interface will be placed in the L3OUT to simplify node-to-node communication.
   * It is not required for the `egress nodes` to peer over BGP if they are only used for Egress Traffic.
 * The egress interface will be connected to an EPG and will be used for the egress gateway feature for POD initiated traffic. 
 
-To ensure route symmetry we can:
+By default traffic received on the egress nodes from the EPG would be returned to the client via the L3OUT Interface resulting in traffic drops.
+To ensure return traffic is routed back to the EPG we can:
+
 * Create a new route-table ID, for example "100"
 * In route table 100, add a default route pointing to the Egress BD Address
 * Use ip rules so that traffic that is sourced from either of the following
@@ -69,11 +71,8 @@ To ensure route symmetry we can:
   * the service IP pool 
   is going to use route table 100, thus ensuring that traffic will be sent back to the L3Out, which preserves routing symmetry.
 
-## Cilium Egress design
+{% include_relative cilium_egress_design.md %}
 
-When it comes to the Cilium Egress design, the only real decisions to make is how many `egress nodes` to deploy and whether to dedicate them only for this purpose.
-Ideally, the design should have a minimum of two `egress nodes` distributed between two pairs of leaves. This will provide redundancy in case of `egress nodes` or ACI leaf failure or during upgrades.
-Depending on the cluster scale and application requirements, dedicated `egress nodes` could be beneficial for the same reasons discussed in the [Cilium BGP design](../simplicity_design/#cilium-bgp-design) section of the Simple design. 
 
 ## Design trade offs
 
@@ -85,5 +84,5 @@ This design aims to provide you with an easy and high scalable design; however, 
 
 For issue (1) there is no solution. Issue (2) can be easily addressed with either vertical or horizontal scaling.
 
-[Next](/docs/aci_design/){: .btn }
+[Next](/docs/aci/aci_bgp_design/){: .btn }
 {: .text-right }
