@@ -102,8 +102,6 @@ spec:
         clusterPoolIPv4PodCIDRMaskSize: 24
     routingMode: native
     autoDirectNodeRoutes: true
-    endpointRoutes: 
-      enabled: true
     ipv4NativeRoutingCIDR: "10.56.0.0/16"
     bpf:
       masquerade: true

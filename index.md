@@ -88,7 +88,7 @@ This design document outlines two potential approaches to achieving our networki
 Regardless of the options you choose **both** design can provide you with the following outcome:
 
 * High Performance
-  * By using [Native Routing](https://docs.cilium.io/en/stable/network/concepts/routing/#native-routing) it is possible to increase the networking stack performances by removing the the Node-to-Node overlay as well as enabling advanced features like [BigTCP](https://docs.cilium.io/en/stable/operations/performance/tuning/#ipv4-big-tcp) or `endpoint routes` to bypass the `cilium_host` interface for added performance.
+  * By using [Native Routing](https://docs.cilium.io/en/stable/network/concepts/routing/#native-routing) it is possible to increase the networking stack performances by removing the the Node-to-Node overlay as well as enabling advanced features like [BigTCP](https://docs.cilium.io/en/stable/operations/performance/tuning/#ipv4-big-tcp).
   
   {: .note }
   BigTCP is currently in beta and should not yet be enabled for production workloads however this design is ready for it and once it goes limited/stable can be enabled with a simple config flag.

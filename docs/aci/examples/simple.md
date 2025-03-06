@@ -137,8 +137,6 @@ k8sServicePort: 7445
 # Direct Routing 
 routingMode: native
 autoDirectNodeRoutes: true
-endpointRoutes: 
-  enabled: true
 ipv4NativeRoutingCIDR: "10.56.0.0/16"
 ipam:
   mode: cluster-pool

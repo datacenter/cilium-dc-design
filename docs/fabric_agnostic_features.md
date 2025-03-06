@@ -11,13 +11,11 @@ parent: Isovalent and Cisco DC Fabrics
 
 ## Common Features
 
-### Native Routing, Auto Direct Node Routes and Endpoint Routes
+### Native Routing and Auto Direct Node Routes
 
-By enabling these 3 features we can implement an efficient packet forwarding between PODs without requiring additional encapsulation or overlay networks. By having direct routes to each pod's IP address subnet, PODs can communicate directly over the existing Layer 2 infrastructure, reducing latency and potential overhead associated with tunneling protocols.
+By enabling these 2 features we can implement an efficient packet forwarding between PODs without requiring additional encapsulation or overlay networks. By having direct routes to each pod's IP address subnet, PODs can communicate directly over the existing Layer 2 infrastructure, reducing latency and potential overhead associated with tunneling protocols.
 
 The Auto Direct Node Routes feature thus leverages the existing L2 topology to streamline pod-to-pod communication, ensuring that packet delivery is both efficient and straightforward. It eliminates the need for exposing the POD Subnet to the broader network fabric, thereby maintaining a cleaner and simple network architecture.
-
-Endpoint Routes enables direct routing to the `veth` pairs without requiring to route via the `cilium_host` interface further increasing the performance.
 
 This configuration aligns with Cilium's ethos of providing high-performance, scalable, and simple networking for Kubernetes environments. By integrating closely with the Linux kernel's routing capabilities, Cilium can offer robust networking solutions without necessitating complex configurations or additional network infrastructure.
 
