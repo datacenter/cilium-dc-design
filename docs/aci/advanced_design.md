@@ -9,22 +9,22 @@ nav_order: 2
 
 The basic network infrastructure for our design will be composed of the following components:
 
-* A tenant: The Kubernetes cluster can be placed in any dedicated, pre-existing between multiple clusters, etc.
+* A tenant: The Kubernetes cluster can be placed in any dedicated, or a shared tenant for deployments with multiple clusters.
 * One Floating SVI L3Out where:
-  * All the nodes are placed in this L3OUT that provides also a L2 Broadcast domain for Node-to-Node Communication
-  * Dedicated Node Ext EPGs and Service EPGs are used for traffic classification and security with ACI Contracts
-  * BGP Peering is established with all or a subset of the nodes for External Service advertisement and LoadBalancing
+  * All the nodes are placed behind this L3Out which also provides a L2 Broadcast domain for Node-to-Node Communication
+  * Dedicated Node External EPGs and Service EPGs are used for traffic classification and security with ACI Contracts
+  * BGP Peering is established with all or a subset of the nodes for External Service advertisement and load balancing
 
 * One Bridge Domain (BD) for the Egress Nodes
-  * Create one EPG and Multiples ESG for the Kubernetes Egress Nodes interface. The ESG selector will be the `Egress IP` so that we can map different pod identities to different ACI ESGs.
+  * One EPG and multiple ESGs for the Kubernetes Egress Nodes interfaces. The ESGs will use IP selectors to map the `Egress IP` so that we can map different pods and or namespaces to different ESGs.
 
-This basic design gives us the following capabilities:
+This design gives us the following capabilities:
 
 * Secure the traffic to/from the cluster with ACI contracts.
 * DHCP relay support: This design allows the Kubernetes nodes to be bootstrapped without the need to manually configure their IP addresses easing the cluster bootstrap and horizontal scalability. 
 
   {: .warning } 
-  DHCP relay on L3OUT has a few limitations see: [DHCP Limitations](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/basic-configuration/cisco-apic-basic-configuration-guide-61x/provisioning-core-aci-fabric-services-61x.html#guidelines-and-limitations-for-a-dhcp-relay-policy)
+  Please be aware of the DHCP relay limitations for L3outs. See: [DHCP Limitations](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/basic-configuration/cisco-apic-basic-configuration-guide-61x/provisioning-core-aci-fabric-services-61x.html#guidelines-and-limitations-for-a-dhcp-relay-policy)
 
 * The nodes can be of any type and can be mixed: you can have a cluster composed of bare-metal hosts and VMs running on any hypervisor as long as network connectivity is provided.
 * Routing simplicity: the node default gateway is the ACI Floating SVI IP.
@@ -34,13 +34,13 @@ This basic design gives us the following capabilities:
 
 ## Cluster L3OUT physical connectivity
 
-There is no strict requirement of the physical connectivity for the cluster EPG as long as it provides the required redundancy level. Most designs are likely to lean toward a vPC based design.
+There is no strict requirement of the physical connectivity for the cluster EPG as long as it provides the required redundancy level. Most designs are likely to lean toward a vPC based design. Having L2 redundancy improves failover times as there is no need to wait for BGP convergence.
 
 ## BGP design
 **Centralized BGP peering for service advertisement**
 
-In order to keep the BGP configuration as simple as possible instead of peering with local leaf switches, all of the Kubernetes nodes will peer with one pair of switches (anchor leaf switches). This simplifies the configuration of the physical network and Cilium. At the time of writing ACI 6.1 [supports](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/verified-scalability/cisco-aci-verified-scalability-guide-612.html) up to 2000 BGP peers per leaf. It is unlikely that this will pose a scale issue for a single Kubernetes cluster. 
-In case Multiple Clusters are running on the same fabric it is easier to spread then over differ anchor nodes as this will not have an impact on the configuration complexity of the cluster. 
+All Kubernetes nodes will peer with a single pair of leaf switches (also called anchor leaf switches), irrespective of their physical placement in the datacenter. This simplifies the configuration of the physical network and Cilium. At the time of writing ACI 6.1 [supports](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/verified-scalability/cisco-aci-verified-scalability-guide-612.html) up to 2000 BGP peers per leaf. It is unlikely that this will pose a scale issue for a single Kubernetes cluster. 
+In case multiple clusters are connected to the same network fabric, different pairs of anchor leafs can be used to distribute the resources.
 
 ![Centralized Routing](../images/centralized-routing.png)
 Centralized Routing
@@ -48,28 +48,28 @@ Centralized Routing
 ### ECMP Considerations
 
 * ACI installs up to 16 eBGP/iBGP ECMP paths. If more than 16 `nodes` are peering via BGP, ACI can be configured to install up to 64 ECMP paths.
-* Maglev and DSR requires the `externalTrafficPolicy` set to `Cluster`: This means that that every node that peers with ACI over BGP will advertise itself as a valid next hop for every exposed Service.
-* The ECMP selection algorithm will install up to the configured number of ECMP per exposed service. If there are more ECMP paths available ACI will randomly ***(Not sure need to triple check)*** select next-hops with the same Metric. This means that even if not all the nodes can be used for the same service there should still be a good distribution of the traffic load over all the nodes running BGP. Furthermore since DSR is used the response is sent directly back to the client from the pod, bypassing the original node that received the request. 
+* Maglev and DSR require the `externalTrafficPolicy` to be set to `Cluster`: This means that that every node that peers with ACI over BGP will advertise itself as a valid next hop for every exposed Service.
+* The ECMP selection algorithm will install up to the configured number of ECMP per exposed service. If there are more ECMP paths available ACI will randomly ***(Not sure need to triple check)*** select next-hops with the same metric. This means that even if not all the nodes can be used for the service, traffic is still distributed fairly to all nodes running BGP. Furthermore since DSR is used, the response is sent back to the client directly from the pod, bypassing the original node that received the request. 
 
 {: .note }
-This architecture requires ACI 6.1.2 or above as the Propagate Next Hop and Ignore AM features are both needed 
+This design requires ACI 6.1(2) or above as the Propagate Next Hop and Ignore IGP Metric features are both needed.
 
 ## Egress Nodes
 
-These nodes will be configured with two interfaces a node interface and an egress one:
-* The node interface will be placed in the L3OUT to simplify node-to-node communication.
-  * It is not required for the `egress nodes` to peer over BGP if they are only used for Egress Traffic.
+These nodes will be configured with two interfaces. One interface for the node and a dedicated interface for egress:
+* The node interface will be placed behind the L3Out to simplify node-to-node communication.
+  * It is not required for the `egress nodes` to establish BGP peering if they are only used for Egress traffic.
 * The egress interface will be connected to an EPG and will be used for the egress gateway feature for POD initiated traffic. 
 
 {: .note }
-For the nodes with Multiple interface is fundamental to ensure that the kubelet’s node-ip is set correctly on each node. In the Advanced Design this has to be the Interface placed in the ACI L3OUT.
-Cilium does not have the ability to chose which interface is used for pod to pod E/W routing and will use the kubelet’s node-ip one.
+For the nodes with Multiple interface is fundamental to ensure that the kubelet’s node-ip is set correctly on each node. In this design this must be the interface placed behind the ACI L3Out.
+Cilium does not have the ability to select which interface is used for pod to pod E/W routing and will use the kubelet’s node IP interface.
 
 By default traffic received on the egress nodes from the EPG would be returned to the client via the L3OUT Interface resulting in traffic drops.
 To ensure return traffic is routed back to the EPG we can:
 
 * Create a new route-table ID, for example "100"
-* In route table 100, add a default route pointing to the Egress BD Address
+* In route table 100, add a default route pointing to the Egress BD IP address
 * Use ip rules so that traffic that is sourced from either of the following
   * the service interface IP address
   * the service IP pool 
@@ -83,8 +83,9 @@ To ensure return traffic is routed back to the EPG we can:
 This design aims to provide you with an easy and high scalable design; however, it comes with the following drawbacks:
 
 1. External services can only be advertised as “Cluster Scope”: This requirement is imposed by Maglev. This drawback is however of minor consequence thanks for Direct Server Return. 
-2. Potential bottle necks for egress traffic
-3. Node IP is "hidden" behind a L3OUT so there is a small loss of visibility compared to the Simplicity first design.
+2. Potential bottlenecks for egress traffic
+3. Node IP is "hidden" behind the L3out so there is a small loss of visibility compared to the Simplicity first design.
+4. Ingress nodes have two interfaces with different route tables, this adds additional complexity.
 
 For issue (1) there is no solution. Issue (2) can be easily addressed with either vertical or horizontal scaling.
 

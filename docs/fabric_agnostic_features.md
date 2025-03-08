@@ -13,14 +13,14 @@ parent: Isovalent and Cisco DC Fabrics
 
 ### Native Routing and Auto Direct Node Routes
 
-By enabling these 2 features we can implement an efficient packet forwarding between PODs without requiring additional encapsulation or overlay networks. By having direct routes to each pod's IP address subnet, PODs can communicate directly over the existing Layer 2 infrastructure, reducing latency and potential overhead associated with tunneling protocols.
+By enabling these two features we can leverage efficient packet forwarding between PODs without requiring additional encapsulation or overlay networks. By having direct routes to each pod's IP address subnet, PODs can communicate directly over the existing Layer 2 infrastructure, reducing latency and potential overhead associated with tunneling protocols.
 
-The Auto Direct Node Routes feature thus leverages the existing L2 topology to streamline pod-to-pod communication, ensuring that packet delivery is both efficient and straightforward. It eliminates the need for exposing the POD Subnet to the broader network fabric, thereby maintaining a cleaner and simple network architecture.
+The Auto Direct Node Routes feature leverages the existing L2 topology to streamline pod-to-pod communication, ensuring that packet delivery is both efficient and straightforward. It eliminates the need to expose the POD Subnet to the broader network fabric, thereby maintaining a cleaner and simple network architecture.
 
 This configuration aligns with Cilium's ethos of providing high-performance, scalable, and simple networking for Kubernetes environments. By integrating closely with the Linux kernel's routing capabilities, Cilium can offer robust networking solutions without necessitating complex configurations or additional network infrastructure.
 
 {: .warning}
-This design is intended to address 90% of common use cases. However, if your cluster scales beyond 1,000 nodes, adjustments to the design may be necessary. In such cases, we strongly encourage you to contact Isovalent for guidance and support.
+This design is intended to address 90% of common use cases. However, if your cluster scales beyond 1,000 nodes, adjustments to the design may be necessary. In such cases, we strongly encourage you to contact Isovalent for additional guidance and support.
 
 ### Cilium BGP Control Plane
 
@@ -30,7 +30,7 @@ Cilium BGP Control Plane [Enterprise](https://docs.isovalent.com/configuration-g
 
 The [Egress Gateway](https://docs.cilium.io/en/stable/network/egress-gateway/egress-gateway) features allows for redirecting traffic originating from pods and destined to specific CIDRs outside the cluster to be routed through particular nodes.
 
-When the egress gateway feature is enabled and egress gateway policies are in place, packets leaving the cluster are masqueraded with selected, predictable IPs (`egressIP`) associated with the gateway nodes. As an example, this feature can be used with legacy firewalls to allow traffic to legacy infrastructure only from specific pods within a given namespace. These pods typically have ever-changing IP addresses. 
+When the egress gateway feature is enabled and egress gateway policies are in place, packets leaving the cluster are masqueraded with selected, predictable IPs (`egressIP`) associated with the gateway nodes. This allows for network administrators to apply network controls to pods and or namesapces establishing outbound connectivity.
 
 {: .warning}
 Only Cilium Enterprise supports [Egress Gateway High Availability](https://docs.isovalent.com/configuration-guide/networking/egress-gateway/index.html)
@@ -38,7 +38,7 @@ Only Cilium Enterprise supports [Egress Gateway High Availability](https://docs.
 ### XDP Acceleration
 
 [The XDP Acceleration](https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/#loadbalancer-nodeport-xdp-acceleration) supports NodePort, LoadBalancer services and services with externalIPs for the case where the arriving request needs to be forwarded and the backend is located on a remote node. This feature was introduced in Cilium version 1.8 at the XDP (eXpress Data Path) layer where eBPF is operating directly in the networking driver instead of a higher layer.
-The majority of drivers supporting 10G or higher rates also support native XDP on a recent kernel and this feature should be enabled.
+The majority of drivers supporting 10G or higher rates also support native XDP on recent kernel versions.
 
 ## Advanced Design Only Features
 
@@ -46,7 +46,7 @@ The majority of drivers supporting 10G or higher rates also support native XDP o
 
 Incorporating advanced load balancing mechanisms into Kubernetes clusters is essential for maintaining optimal performance and efficient resource utilization. The integration of Cilium with Maglev hashing provides a robust solution for consistent and efficient load distribution, particularly in scenarios involving Equal-Cost Multi-Path (ECMP) routing.
 
-Maglev consistent hashing minimizes such disruptions by ensuring that each load balancing node has a consistent view and ordering for the backend lookup table such that selecting the backend through the packet's 5-tuple hash will always result in forwarding the traffic to the very same backend without having to synchronize state with the other nodes. This not only improves resiliency in case of failures but also achieves better load balancing properties since newly added nodes will make the same consistent backend selection throughout the cluster.
+Maglev consistent hashing minimizes disruptions by ensuring that each load balancing node has a consistent view and ordering for the backend lookup table such that selecting the backend through the packet's 5-tuple hash will always result in forwarding the traffic to the same backend without having to synchronize state with the other nodes. This not only improves resiliency in case of failures but also achieves better load balancing properties since newly added nodes will make the same consistent backend selection throughout the cluster.
 
 ![cilium-maglev](../images/cilium-maglev.gif)
 

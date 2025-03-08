@@ -4,7 +4,7 @@ This is a common section for both the simplicity and advanced design
 
 ## Cilium Egress design
 
-When it comes to the Cilium Egress design, the only real decisions to make is how many `egress nodes` to deploy and whether to dedicate them only for this purpose.
+When it comes to the Cilium Egress design, the only consideration is how many `egress nodes` to deploy and whether to dedicate them only for this purpose.
 Ideally, the design should have a minimum of two `egress nodes` distributed between two pairs of leaves. This will provide redundancy in case of `egress nodes` or ACI leaf failure or during upgrades.
 Depending on the cluster scale and application requirements, dedicated `egress nodes` could be beneficial for the same reasons discussed for the `inress nodes`.
 

@@ -4,13 +4,13 @@ parent: Config Example
 layout: default
 ---
 
-# Example configuration - Advanced Design With OpenShit
+# Example configuration - Advanced Design With OpenShift
 
-This cluster will be composed
+This cluster will be composed of:
 
 * 3x Control Plane nodes
-* 3x worker nodes
-* 2x egress nodes
+* 3x Worker nodes
+* 2x Egress nodes
 
 The following subnets will be used:
 * Node subnet and BGP Peering: `192.168.2.32/28`
@@ -23,33 +23,33 @@ The following subnets will be used:
 
 * Create a new `ocp-cluster-1` tenant. All of the subsequent config is placed inside this tenant.
 * Create a new `egress` BD.
-  * Note: In this example, this BD is mapped to a pre-existing VRF in the common tenant. You will need to create your own VRF.
-  * Add the egress nodes subnet SVI `192.168.2.94/28` as the subnet.
+  * Note: In this example, this BD is mapped to a pre-existing VRF in the common tenant. Alternatively, you can create a VRF within the new tenant.
+  * Add the egress nodes subnet SVI `192.168.2.94/28` as the subnet to the BD.
 * Create a new `k8s` application profile.
-* Create an `egress` EPG and provision connectivity to your `K8s` node through VMM and/or static port binding.
-* Create an `App-1` ESG and use the `192.168.2.81/32`and `192.168.2.82/32` IP subnet selector. 
-  * Note: In this lab I have 2 egress gateways:
-    * `egress-1` is configured with `192.168.2.81/32`
-    * `egress-2` is configured with `192.168.2.82/32`
-  * Add any required contracts
-* Create a new L3Out called `openshift`. This will be configured using floating SVIs.
-  * Create a new `Node Profile` and add your anchor nodes to it; in this example. I have 2 anchor nodes
-  * Configure a floating interface profile with 2 floating-SVI interfaces, one for each node.
-  * Add a BGP peer connectivity profile for the `192.168.2.32/28` subnet. Select a BGP remote AS for your cluster. In this example, we are going to use `65113`.
-    * Enabled `Bidirectional Forwarding Detection`
+* Create an `egress` EPG and provision connectivity to your `K8s` nodes through VMM, static port binding, or the AAEP (Attachable Access Entity Profile).
+* Create an `App-1` ESG and configure `192.168.2.81/32`and `192.168.2.82/32` as IP selectors for the ESG. 
+  * Note: This setup makes use of two dedicated egress nodes:
+    * `egress-1` is configured with IP `192.168.2.81/32`
+    * `egress-2` is configured with IP `192.168.2.82/32`
+  * Add any required contracts to allow for communication such as reaching the cluster.
+* Create a new L3Out called `openshift`. This will be configured with a floating SVI.
+  * Create a new `Node Profile` and add the anchor leaf nodes to it. This example makes use of two anchor nodes.
+  * Configure a floating interface profile with 2 floating SVI interfaces, one for each leaf node.
+  * Add a BGP peer connectivity profile for the `192.168.2.32/28` subnet. Select a BGP remote AS for your cluster. This example makes use of AS number `65113`.
+    * Enable `Bidirectional Forwarding Detection`
     * Repeat this step for all the interface profiles
-  * Create a `nodes` external EPG for the load-balancer services pool: `192.168.2.32/28`, and set this subnet as `External Subnets for External EPG`. This will be used to control who the OpenShift nodes can communicate with.
-  * (Optional) Create a `default_svc` external EPG for the load-balancer services pool: `192.168.2.48/28`, and set this subnet as `External Subnets for External EPG`. This could be useful if you want to have a default set of permit/deny rules for the services that are exposed from your Kubernetes Cluster.
-  * Create an `app1_svc` external EPG for the load-balancer services: `192.168.2.49/28`, and set this subnet as `External Subnets for External EPG`.
-  * Create an `app2_svc` external EPG for the load-balancer services: `192.168.2.50/28`, and set this subnet as `External Subnets for External EPG`.
-    * **Note**: The IP addresses are allocated dynamically by Cilium, even if you are following this example step by step you might need to update these IPs depending on the actual `LoadBalancer` IP allocation. 
-  * Add the required `contracts` to `external EPGs` to provide connectivity toward your clients.
+  * Create a `nodes` external EPG for the load-balancer services pool: `192.168.2.32/28`, and configure this subnet as `External Subnets for External EPG`. This external EPG will be used to control communication to and from the Openshift nodes.
+  * (Optional) Create a `default_svc` external EPG for the load-balancer services pool: `192.168.2.48/28`, and configure this subnet with `External Subnets for External EPG`. This could be useful if you want to have a default set of permit/deny rules for the services that are exposed from your Kubernetes Cluster. The following steps describe how to further restrict access per 
+  * Create an `app1_svc` external EPG for the load-balancer services: `192.168.2.49/28`, and configure the subnet with `External Subnets for External EPG`.
+  * Create an `app2_svc` external EPG for the load-balancer services: `192.168.2.50/28`, and configure the subnet with `External Subnets for External EPG`.
+    * **Note**: The IP addresses are allocated dynamically by Cilium, even if you are following this example step by step you might need to update these IPs depending on the actual `LoadBalancer` IP allocation.
+  * Add the required `contracts` to `external EPGs` to provide connectivity towards your clients.
 
 * Enable Next Hop Propagate and Ignore IGP Metric (Requires ACI 6.1(2) or newer)
 
   * Create a `BGP Best Path Policy`
     * Enable `Ignore IGP metric when choosing multipaths`
-    * **Note:** This config is applied to the whole VRF
+    * **Note:** This config is applied to the whole VRF and will apply to any other L3Outs in this VRF.
   * Create a `BGP Protocol Profile` by right clicking on the `Logical Node Profile`
     * Select the `BGP Best Path Policy` we just created for the `Bestpath Control Policy`
   * Create a `Match Rule`
@@ -62,7 +62,7 @@ The following subnets will be used:
     * Select as `Set Rule` and select the `Set Rule` created previously 
   * Apply the `Route Map` to every `BGP Peer Connectivity Profile` under `Route Control Profile`
 * Enable BFD:
-  * Create a `BFD Interface Policy` and configure it to match the Cilium Default Timers
+  * Create a `BFD Interface Policy` and configure it to match the Cilium Default BFD Timers
     * Detection Multiplier: 3
     * Minimum Transmit Internal: 300
     * Minimum Receive Internal: 300
@@ -74,7 +74,7 @@ The following subnets will be used:
 
 ### Installation
 
-Cilium can be installed with the [Cilium OLM](https://github.com/isovalent/olm-for-cilium) Operator and its config can be tuned by modifying the `cluster-network-07-cilium-ciliumconfig.yaml` file as show below. You wil need to customize this config to match your subnets, openshift domain name etc. This config is provided just as an example.
+Cilium can be installed with the [Cilium OLM](https://github.com/isovalent/olm-for-cilium) Operator and its config can be tuned by modifying the `cluster-network-07-cilium-ciliumconfig.yaml` file as show below. You will need to customize this config to match your subnets, openshift domain name etc. This config is provided as an example.
 
 ```yaml
 apiVersion: cilium.io/v1alpha1
@@ -167,8 +167,8 @@ spec:
 
 The main goals for this design are the following:
 
-* All OpenShift nodes will peer with a Pair of ACI Border Leaves. This is achieved by simply not using a `nodeSelector` in the `IsovalentBGPClusterConfig`
-* Services with an `advertise: bgp` label are going to be advertised. This requirement can be met by creating a `IsovalentBGPAdvertisement` that selects the services based on this label.
+* All OpenShift nodes will peer with a pair of ACI Border Leafs. This is achieved by simply not using a `nodeSelector` in the `IsovalentBGPClusterConfig`
+* Services with an `advertise: bgp` label should be advertised via BGP. This requirement can be met by creating a `IsovalentBGPAdvertisement` that selects the services based on this label.
 * BFD is enabled for Cilium: This requirement can be met by creating a `IsovalentBFDProfile` and referencing it in the `IsovalentBGPPeerConfig`
 
 A complete configuration can be seen here:
@@ -387,10 +387,10 @@ IP Route Table for VRF "common:default"
 The egress configuration is extremely simple: once the nodes are configured with the dedicated egress IP one can create an `IsovalentEgressGatewayPolicy` that:
 
 * Select one or more `destinationCIDRs` to enable egress gateway `SNAT` logic. (Any IP belonging to these ranges which is also an internal cluster IP is excluded from the egress gateway SNAT logic.)
-  * Optionally select some `excludedCIDRs` 
-* Select wich node are part of the `egressGroups` with a `nodeSelector`
-* Specify which `egressIP` a node has to use. Note: The `egressIP` needs to be pre-configured on the node.
-* Select which pods are gonna be using this `IsovalentEgressGatewayPolicy` with a `podSelector`
+  * Optionally select any `excludedCIDRs`
+* Select wich nodes are part of the `egressGroups` with a `nodeSelector`
+* Specify which `egressIP` a node has to use. Note: The `egressIP` needs to be pre-configured on the node. Commonly as a secondary IP on the interface. This should be done prior to deploying the policy.
+* Select which pods the `IsovalentEgressGatewayPolicy` should apply to by using a `podSelector`
 
 For example the configuration below will NAT all traffic (`destinationCIDRs`) initiated from pods in the `egress-1` namespace (`io.kubernetes.pod.namespace`) using two nodes (`kubernetes.io/hostname`) and two IPs (`egressIP: 192.168.2.83 and 192.168.2.84`)
 
@@ -418,7 +418,8 @@ spec:
 
 ```
 
-It is easy now to add these 2 IP in an ESG selector and use ACI contracts to enforce security policy for all traffic initiated by PODs in the `namespace: egress-1`
+These two `egressIPs` can now easily be mapped by using an IP selector on the ESG. This allows for administrators to control access per application by using contracts. This example shows access control per namespace, but this can also be narrowed down further to a subset of pods.
+
 
 [Next](/cilium-dc-design/docs/aci/examples/simple/){: .btn }
 {: .text-right }
