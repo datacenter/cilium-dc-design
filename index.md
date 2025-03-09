@@ -12,9 +12,9 @@ This design document is currently under review and is subject to change. The inf
 {: .no_toc }
 
 
-Welcome to the Isovalent Best Practices for the Modern Datacenter Documentation Site! This resource is designed to provide guidance and insights into the Networking best practices for deploying Kubernetes Clusters using Isovalent as CNI. While we strive to cover a wide range of scenarios and design considerations, please note that the information provided here addresses the most common designs and situations. We encourage users to conduct their own research and tailor their designs to meet specific needs and requirements.
+Welcome to the Isovalent Best Practices for the Modern Datacenter Documentation Site! This resource is designed to provide guidance and insights into the Networking best practices for deploying Kubernetes Clusters using Cilium as CNI. While we strive to cover a wide range of scenarios and design considerations, please note that not all options are covered. Alternative designs exist, and we encourage users to conduct their own research and tailor their designs to meet specific needs and requirements.
 
-The Isovalent Best Practices for the Modern Datacenter Documentation Site serves as a comprehensive guide to help you navigate through various concepts and options to strike a balance between feature and complexity when Deploying Kubernetes Cluster in the Datacenter. Our goal is to equip you with the knowledge and tools needed to implement effective and efficient solutions.
+The Isovalent Best Practices for the Modern Datacenter Documentation Site serves as a comprehensive guide to help you navigate through various concepts and options to strike a balance between features and complexity when deploying Kubernetes Clusters in the Datacenter. Our goal is to equip you with the knowledge and tools needed to implement effective and efficient solutions.
 
 We welcome contributions from the community! If you have insights or improvements you'd like to share, please feel free to submit a pull request or open an issue on our GitHub repository.
 
@@ -28,10 +28,10 @@ However when designing BGP peering for Kubernetes clusters, especially as they g
 
 This white paper proposes two design solutions:
 
-- A Simplicity-First Approach Design trading some features and performances for ease of config and operation
-- A slightly more Advanced Design that trades some simplicity for high performance and resilient ECMP hashing for exposed services.
+- A Simplicity-First Approach Design trading some features and performance for ease of configuration and operations.
+- A slightly more Advanced Design that trades some simplicity for better performance and resilient ECMP hashing towards services.
 
-At present, these designs does not necessitate the use of supplementary components from Cisco or other third-party vendors to meet its objectives. While there is the potential for users or the open-source community to create tools that automate the Cisco ACI configuration, such developments are optional and beyond the scope of this design document.
+At present, these designs does not necessitate the use of supplementary components from Cisco or other third-party vendors to meet its objectives. We encourage users to programatically deploy or even automate the configuration on ACI. Such efforts can aid in the repeatability, reduce risk, and accelerate deployments. However, such efforts are optional and are beyond the scope of this design document.
 
 This white paper will thoroughly examine the technical underpinnings, implementation considerations, and operational benefits of this approach. It will guide readers through the process of implementing this hybrid model, ensuring that network reliability, performance, and security are not only preserved but significantly enhanced.
 
@@ -75,26 +75,25 @@ Cilium and Cilium Enterprise both provide advanced networking, security, and obs
 * Professional Support: Customers receive professional support, including SLAs, access to a dedicated support team, and potentially custom engineering services.
 * Enterprise Integration: Designed to integrate seamlessly into large-scale enterprise environments, offering improved reliability, scalability, and ease of management.
 
-This design best practice document is written with enterprise customers in mind and as such is taking advantages of Cilium Enterprise features.
-Where Enterprise features are used they will be called out and if possible an alternative for the Open Source version will be presented.
+This design best practice document is tailored for enterprise customers, utilizing Cilium Enterprise features. When enterprise features are mentioned, alternatives for the open-source version will be provided if possible.
 
 ## Goals
 
 The design goals for our Kubernetes networking solution focus on addressing the critical challenges faced by administrators when managing traffic flow and ensuring secure connectivity within and outside the Kubernetes cluster. Our approach is to implement a robust and scalable load-balancing strategy coupled with a secure networking model that bridges the gap between containerized applications and external non-containerized systems.
 
 ## Two Designs
-This design document outlines two potential approaches to achieving our networking objectives. Each option has been crafted to cater to different priorities and operational considerations. 
+This design document outlines two approaches to achieving our networking objectives. Each option has been crafted to cater to different priorities and operational considerations. 
 
-Regardless of the options you choose **both** design can provide you with the following outcome:
+Regardless of the options you choose **both** designs can provide you with the following outcomes:
 
 * High Performance
-  * By using [Native Routing](https://docs.cilium.io/en/stable/network/concepts/routing/#native-routing) it is possible to increase the networking stack performances by removing the the Node-to-Node overlay as well as enabling advanced features like [BigTCP](https://docs.cilium.io/en/stable/operations/performance/tuning/#ipv4-big-tcp).
+  * By using [Native Routing](https://docs.cilium.io/en/stable/network/concepts/routing/#native-routing) it is possible to increase the networking stack performance by removing the the Node-to-Node overlay as well as enabling advanced features like [BigTCP](https://docs.cilium.io/en/stable/operations/performance/tuning/#ipv4-big-tcp).
   
   {: .note }
-  BigTCP is currently in beta and should not yet be enabled for production workloads however this design is ready for it and once it goes limited/stable can be enabled with a simple config flag.
+  BigTCP is currently in beta and should not be used for production workloads. However, this design is prepared for its future stable release, allowing it to be enabled easily with a simple configuration flag once it becomes available.
 
 * Efficient load balancing:
-  * load-balancing mechanism that effectively distributes external client traffic to services within the Kubernetes cluster
+  * Load-balancing that effectively distributes external client traffic to services within the Kubernetes cluster
   * Utilize cluster nodes to perform BGP peering, enabling Layer-3/Layer-4 Equal-Cost Multi-Path ECMP-based load balancing
 
 * External service security:
@@ -107,31 +106,31 @@ Regardless of the options you choose **both** design can provide you with the fo
   * This will ensure it is easy to bootstrap and horizontally scale a given cluster.
 
   {: .warning } 
-  DHCP Replay has limitation when used on an ACI L3OUT See: [DHCP Limitations](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/basic-configuration/cisco-apic-basic-configuration-guide-61x/provisioning-core-aci-fabric-services-61x.html#guidelines-and-limitations-for-a-dhcp-relay-policy)
+  Please be aware of the DHCP relay limitations for L3outs. See: [DHCP Limitations](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/basic-configuration/cisco-apic-basic-configuration-guide-61x/provisioning-core-aci-fabric-services-61x.html#guidelines-and-limitations-for-a-dhcp-relay-policy)
 
 ### Simplicity-First Approach Design
 * Objectives: 
   * Ability to run on any ACI Software version
   * Provide a straightforward and easily maintainable solution.
-  * Utilize ACI for External Service LoadBalancing
-  * Utilize ACI Contract for macro segmentation for North-South Traffic
+  * Utilize ACI for External Service load-balancing
+  * Utilize ACI Contracts to control North-South traffic
 * Approach: 
-  * All Nodes are deployed in an EPG and are mapped into an ESG
+  * All Cluster Nodes are deployed in an EPG and are mapped into an ESG
   * Native routing mode: Since all the nodes share the same L2 Domain (the Node BD) POD to POD traffic can be directly routed
   * Dedicated Egress nodes, with the Egress IP(s) mapped into an ESG
   * Dedicated Ingress nodes peering with BGP for External Services
 * Benefits: Quick deployment, reduced complexity, and lower operational overhead.
 * Limitations: 
-  * Cilium selects service backends randomly and ensures that the traffic remains sticky to the backend. However, the issue with this scheme is that in case of a node failure (or even a change in the ECMP Next Hops), ECMP can select different Kubernetes node which has no prior context on which backend is currently serving the connection. This eventually leads to unexpected disruptions on connection-oriented protocols like TCP as client connections are being reset by the newly selected backends.
+  * Cilium selects service backends randomly and ensures that the traffic remains sticky to the backend. However, this method can cause issues if a node fails or if there is a change in the ECMP Next Hops. This can result into traffic being sent to a different Kubernetes node, which lacks context on which backend is currently serving the connection. This can lead to unexpected disruptions on connection-oriented protocols like TCP, as client connections are being reset by the newly selected backends.
   * May not fully optimize network throughput in scenarios with complex traffic patterns
   
 ### Advanced Design with Maglev for ECMP Flow Consistency
 
 * Objectives: 
   * Maximize network performance and ensure consistent flow distribution in ECMP scenarios with [Maglev](docs/fabric_agnostic_features/#maglev).
-  * Utilize ACI Contract for macro segmentation for North-South Traffic
+  * Utilize ACI Contracts to control North-South traffic
   * Approach: 
-    * All Nodes are deployed in a L3OUT
+    * All Nodes are deployed behind a L3Out
       * Use a `Node` External EPG to secure Kubernetes Nodes traffic
       * Use one External EPG per exposed External Service for North-South traffic accessing Kubernetes services.
       * Leverage [Maglev hashing](docs/fabric_agnostic_features/#maglev) to maintain ECMP flow consistency. It is suited for environments requiring optimal load distribution and performance. Maglev adds the following requirements:
@@ -140,8 +139,8 @@ Regardless of the options you choose **both** design can provide you with the fo
   * Dedicated Egress nodes, with the Egress IP(s) mapped into an ESG
 * Benefits: Improved flow consistency, enhanced network utilization, and better handling of dynamic traffic patterns.
 * Limitations:
-  * ACI 6.1.2 or newer is required
-  * Node IP visibility is lost as they are placed in an L3OUT
+  * ACI 6.1(2) or later is required
+  * Node IP visibility is lost as they are placed behind an L3Out
 
 
 [Next](/cilium-dc-design/docs/fabric_agnostic_features/){: .btn }

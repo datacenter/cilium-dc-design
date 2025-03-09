@@ -8,6 +8,8 @@ layout: default
 
 This example assumes you are familiar with [Talos Linux](https://www.talos.dev/) and upstream Kubernetes. 
 
+Talos Linux is a minimal and secure operating system tailored for Kubernetes clusters. Instead of a traditional shell or package manager, it uses a declarative configuration file for setup and management. Note that the configuration in this example applies similarly to other distributions.
+
 This cluster will be composed of a mix of x86 and ARM64 nodes
 
 * 3x Control Plane nodes
@@ -27,36 +29,38 @@ The following subnets will be used:
 
 * Create a new `cilium-cluster-1` tenant. All of the subsequent config is placed inside this tenant.
 * Create a new `nodes` BD.
-  * Note: In this example, this BD is mapped to a pre-existing VRF in the common tenant. You will need to create your own VRF.
-  * Add the nodes subnet SVI `192.168.2.14/28` as the primary subnet.
-  * Add an additional Egress GW subnet SVI: `192.168.2.110/28` Note: This subnet is optional and you could also use the Node Subnet for this. Just having separate subnet makes for a clearer demarcation of roles.
+  * Note: In this example, this BD is mapped to a pre-existing VRF in the common tenant. Alternatively, you can create a VRF within the new tenant.
+  * Add the node subnet SVI `192.168.2.14/28` as the primary subnet.
+  * Add an additional Egress GW subnet SVI: `192.168.2.110/28` Note: This subnet is optional; you can use the Node Subnet instead. However, using a separate subnet provides a clearer distinction of roles.
 * Create a new `k8s` application profile.
-* Create a `nodes` EPG and provision connectivity to your `K8s` node through VMM and/or static port binding.
-* Create a `nodes` ESG and use the `192.168.2.0/28` as IP subnet selector.
-  * Add contracts to allow your required connectivity
-* Create an `App-1` ESG and use the `192.168.2.97/32`and `192.168.2.101/32` IP subnet selector. 
-* Create an `App-2` ESG and use the `192.168.2.98/32`and `192.168.2.102/32` IP subnet selector. 
-  * Note: In this lab I have 2 egress gateways:
+* Create a `nodes` EPG and provision connectivity to your `K8s` nodes through VMM, static port binding, or the AAEP (Attachable Access Entity Profile).
+* Create a `nodes` ESG and use the `192.168.2.0/28` as IP selector for the ESG.
+  * Add any required contracts to allow for communication such as reaching the cluster.
+* Create an `App-1` ESG and configure `192.168.2.97/32`and `192.168.2.101/32` as IP selectors for the ESG.  
+* Create an `App-2` ESG and configure `192.168.2.98/32`and `192.168.2.102/32` as IP selectors for the ESG. 
+  * Note: This setup makes use of two dedicated egress nodes:
     * `egress-cilium-0` is configured with `192.168.2.97/32` and `192.168.2.98/32`
     * `egress-cilium-1` is configured with `192.168.2.101/32` and `192.168.2.102/32`
-  * Add any required contracts
+  * Add contract(s) to provide connectivity for pods egressing the cluster via the Egress IPs.
 * Create a new L3Out called `services`. This will be configured using floating SVIs.
-  * Create a new `Node Profile` and add your anchor nodes to it; in this example. I have 2 anchor nodes
-  * Configure a floating interface profile with 2 floating-SVI interfaces, one for each node.
-  * Add a BGP peer connectivity profile for the `192.168.2.16/28` subnet. Select a BGP remote AS for your cluster. In this example, we are going to use `65111`.
+  * Create a new `Node Profile` and add the anchor leaf nodes to it. This example makes use of two anchor nodes.
+  * Configure a floating interface profile with 2 floating SVI interfaces, one for each leaf node.
+  * Add a BGP peer connectivity profile for the `192.168.2.16/28` subnet. Select a BGP remote AS for your cluster. This example makes use of AS number `65111`.
     * Enabled `Bidirectional Forwarding Detection`
     * Repeat this step for all the interface profiles
 
-  * (Optional) Create a “default_svc” external EPG for the load-balancer services pool: `192.168.5.0/28`, and set this subnet as `External Subnets for External EPG`. This could be useful if you want to have a default set of permit/deny rules for the services that are exposed from your Kubernetes Cluster.
-  * Create an `app1_svc` external EPG for the load-balancer services: `192.168.5.2/32`, and set this subnet as `External Subnets for External EPG`.
-  * Create an `app2_svc` external EPG for the load-balancer services: `192.168.5.1/32`, and set this subnet as `External Subnets for External EPG`.
+  * (Optional) Create a “default_svc” external EPG for the load-balancer services pool: `192.168.5.0/28`, and configure this subnet with `External Subnets for External EPG`. This could be useful if you want to have a default set of permit/deny rules for the services that are exposed from your Kubernetes Cluster.
+  * Create an `app1_svc` external EPG for the load-balancer services: `192.168.5.2/32`, and configure the subnet with `External Subnets for External EPG`.
+  * Create an `app2_svc` external EPG for the load-balancer services: `192.168.5.1/32`, and configure the subnet with `External Subnets for External EPG`.
   
     **Note**: The IP addresses are allocated dynamically by Cilium, even if you are following this example step by step you might need to update these IPs depending on the actual `LoadBalancer` IP allocation. 
-  * Add the required `contracts` to `external EPGs` to provide connectivity toward your clients.
+  * Add the required `contracts` to `external EPGs` to provide connectivity towards your clients.
 
 * Enable Next Hop Propagate and Ignore IGP Metric (Requires ACI 6.1(2) or newer)
+
   * Create a `BGP Best Path Policy`
     * Enable `Ignore IGP metric when choosing multipaths`
+    * **Note:** This config is applied to the whole VRF and will apply to any other L3Outs in this VRF.
   * Create a `BGP Protocol Profile` by right clicking on the `Logical Node Profile`
     * Select the `BGP Best Path Policy` we just created for the `Bestpath Control Policy`
   * Create a `Match Rule`
@@ -69,7 +73,7 @@ The following subnets will be used:
     * Select as `Set Rule` and select the `Set Rule` created previously 
   * Apply the `Route Map` to every `BGP Peer Connectivity Profile` under `Route Control Profile`
 * Enable BFD:
-  * Create a `BFD Interface Policy` and configure it to match the Cilium Default Timers
+  * Create a `BFD Interface Policy` and configure it to match the Cilium Default BFD Timers
     * Detection Multiplier: 3
     * Minimum Transmit Internal: 300
     * Minimum Receive Internal: 300
@@ -82,7 +86,7 @@ The following subnets will be used:
 Cilium can be installed on any Kubernetes distribution and its configuration is mostly identical regardless of the distribution of choice. This design has been tested with:
 * [Talos Linux](https://www.talos.dev/)
 
-The steps to install a Kubernetes clusters are not covered in this guide, you can use any distribution that supports running Cilium.
+This guide does not include the steps for installing a Kubernetes cluster. You can use any distribution that supports running Cilium.
 
 ### Ingress Nodes
 
@@ -99,11 +103,11 @@ network:
         - 192.168.2.19/28
 ```
 
-* Run the [Cilium Secondary Interface Route Manager](https://github.com/camrossi/cilium-secondary-interface-route-manager) This is required until this [issue](https://github.com/siderolabs/talos/issues/7184) is addressed.
+* Run the [Cilium Secondary Interface Route Manager](https://github.com/camrossi/cilium-secondary-interface-route-manager) This example daemonset manipulates the route table on the ingress nodes, which is required until this [issue](https://github.com/siderolabs/talos/issues/7184) is addressed. Please be advised that this repository is available as is, and no support is provided. Alternatively it is also possible to manually patch the ingress nodes with the required routes.
 
 ### Egress Nodes
 
-The `egress nodes` needs to be configured with additional addresses under the main node interface. These addresses will be used to source POD initiated traffic.
+The `egress nodes` must be configured with additional addresses on the primary interface. These addresses will be used to source traffic initiated by pods.
 Cilium provides a capability to manage these addresses via the `IsovalentEgressGatewayPolicy` CRD however as of Cilium 1.16.6 there is a bug in the `Egress gateway IPAM` and such addresses need to be configured manually on each of the nodes.
 
 To do this in `Talos linux` we can simply add additional `/32 addresses` under the primary interface:
@@ -117,14 +121,14 @@ network:
         - 192.168.2.97/32
 ```
 
-We are still using DHCP on this interfaces and we are just manually adding additional addresses for the egress functionality. If ACI is configured with a secondary subnet encompassing the `/32` addresses, no additional configuration is required even if the Egress Subnet falls outside of the Node Subnet. 
+We continue to use DHCP on the primary node interfaces and manually add additional addresses for egress functionality. If ACI is set up with a secondary subnet that includes the `/32` addresses, no extra configuration is needed, even if the Egress Subnet is outside the Node Subnet.
 
 ## Cilium Enterprise
 
 ### Installation
 
 Cilium can be installed with Helm.
-Some parameters are specific to the Kubernetes distribution being used, while others are necessary to enable the features utilized in this design.
+Some parameters are specific to the Kubernetes distribution being used, while others are necessary to enable the features utilized in this example.
 
 * Generic Config
 
@@ -146,7 +150,7 @@ ipam:
     clusterPoolIPv4PodCIDRMaskSize: 24
 
 cni:
-  exclusive: false # Set to false to allow Multus to work useful for KubeVirt
+  exclusive: false # Set to false to allow Multus to work. This is useful for KubeVirt
 bpf:
   masquerade: true
 nodePort:
@@ -221,13 +225,13 @@ securityContext:
 
 The main goals for this design are the following:
 
-* Ensure that the `ingress nodes` are not running any POD, to do this we can use a node taint. In this config, I use `NoExecute` this will terminate any Pod running on my `ingress nodes`. This is useful because the `ingress nodes` have been provisioned during cluster bootstrap and might be running some Pods.
+* Ensure that the `ingress nodes` are not running any pods by applying a node taint. Using the `NoExecute` taint will terminate any pods running on the `ingress nodes`, and prevent scheduling. This is important because these nodes may have been provisioned during cluster bootstrap and could already have pods running on them.
 
 ```bash
 kubectl  taint node <nodes> dedicated=ingress:NoExecute
 ```
 
-* `ingress-cilium-bgp-0` and `ingress-cilium-bgp-1` peers with leaves 201 and 202. This requirement can be met by labelling the node and creating a `IsovalentBGPClusterConfig` that selects the nodes based on this label and ensures that each node peers only with Leaf201 and 202.
+* `ingress-cilium-bgp-0` and `ingress-cilium-bgp-1` are configured to peer with ACI leafs 201 and 202. This can be achieved by labeling the nodes and creating an `IsovalentBGPClusterConfig` that selects nodes based on this label, ensuring each node only peers with Leaf201 and 202.
 
 ```bash
 kubectl label node <nodes> rack: rack0
@@ -311,7 +315,7 @@ spec:
     transmitIntervalMilliseconds: 50
 ```
 
-Once this configuration is completed the BGP Peering should be established. You can check directly from the K8s cluster by using the `cilium` cli utility or from ACI:
+Once this configuration is completed, the BGP peering should be established. You can verify this directly from the Kubernetes cluster using the `cilium` CLI utility or by checking ACI.
 
 ```bash
  ~ cilium bgp peers
@@ -345,13 +349,13 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
 
 ### Configuration - Egress Config
 
-The egress configuration is extremely simple: once the nodes are configured with the dedicated egress IP one can create an `IsovalentEgressGatewayPolicy` that:
+The egress configuration is straightforward. After configuring the nodes with the dedicated egress IP, you can create an `IsovalentEgressGatewayPolicy` that:
 
-* Select one or more `destinationCIDRs` to enable egress gateway `SNAT` logic. (Any IP belonging to these ranges which is also an internal cluster IP is excluded from the egress gateway SNAT logic.)
+* Selects one or more `destinationCIDRs` to enable egress gateway `SNAT` logic. (Any IP belonging to these ranges which is also an internal cluster IP is excluded from the egress gateway SNAT logic.)
   * Optionally select some `excludedCIDRs` 
-* Select wich node are part of the `egressGroups` with a `nodeSelector`
-* Specify which `egressIP` a node has to use. Note: The `egressIP` needs to be pre-configured on the node.
-* Select which pods are gonna be using this `IsovalentEgressGatewayPolicy` with a `podSelector`
+* Selects wich nodes are part of the `egressGroups` with a `nodeSelector`
+* Specify which `egressIP` the node has to use. Note: The `egressIP` needs to be pre-configured on the node. Commonly as a secondary IP on the interface. This should be done prior to deploying the policy.
+* Select which pods the `IsovalentEgressGatewayPolicy` should apply to by using a `podSelector`
 
 For example the configuration below will NAT all traffic (`destinationCIDRs`) initiated from pods in the `egress-1` namespace (`io.kubernetes.pod.namespace`) using two nodes (`kubernetes.io/hostname`) and two IPs (`egressIP: 192.168.2.97 and 192.168.2.101`)
 
@@ -378,4 +382,4 @@ spec:
         io.kubernetes.pod.namespace: egress-1
 ```
 
-It is easy now to add these 2 IP in an ESG selector and use ACI contracts to enforce security policy for all traffic initiated by PODs in the `namespace: egress-1`
+These two `egressIPs` can now easily be mapped by using an IP selector on the ESG. This allows for administrators to control access per application by using contracts. This example shows access control per namespace, but this can also be narrowed down further to a subset of pods. Pods in the `egress-1` namespace will egress the cluster via the `egressIPs` specified in the `IsoValentEgressGatewayPolicy`.
