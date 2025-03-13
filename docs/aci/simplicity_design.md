@@ -7,6 +7,7 @@ nav_order: 1
 
 # Simplicity Design
 
+* This design is meant more for testing/lab, if you are considering going into full production we recommend the [Advanced Design](../../advanced_design)
 The basic network infrastructure for our design will be composed of the following components:
 
 * A tenant: The Kubernetes cluster can be placed in any dedicated, or a shared tenant for deployments with multiple clusters.
@@ -42,6 +43,10 @@ This basic design gives us the following capabilities:
 There is no strict requirement of the physical connectivity for the cluster EPG as long as it provides the required redundancy level. Most designs are likely to lean toward a vPC based design. Having L2 redundancy improves failover times as there is no need to wait for BGP convergence.
 
 ## Selective BGP peering for service advertisement
+
+{: .note }
+Might remove this section and use [L2 Service Advertisements](https://docs.cilium.io/en/stable/network/l2-announcements/#l2-announcements) to make this even simpler so we will have 2 design one that is super simple and lives in an EPG
+and one that is more complex with advanced feature and lives all in an L3OUT
 
 In this design, a dedicated L3Out is created in ACI for external service advertisement for a subset of Kubernetes nodes that will be, from now on, be called `ingress nodes`.
 
@@ -86,7 +91,32 @@ Depending on the cluster scale and application requirements, dedicated `ingress 
 
 Refer to the [Example configuration](../examples/examples/) section of this document for implementation details.
 
-{% include_relative cilium_egress_design.md %}
+## Cilium Egress design
+
+When it comes to the Cilium Egress design, the only consideration is how many `egress nodes` to deploy and whether to dedicate them only for this purpose.
+Ideally, the design should have a minimum of two `egress nodes` distributed between two pairs of leaves. This will provide redundancy in case of `egress nodes` or ACI leaf failure or during upgrades.
+Depending on the cluster scale and application requirements, dedicated `egress nodes` could be beneficial for the same reasons discussed for the `inress nodes`.
+
+{: .note }
+A single ingress node can be configured with multiple IP addresses, enabling it to support multiple PODs identities. This configuration allows us to efficiently reuse the same node across different namespaces. For example, IP-A can be associated with Namespace A, while IP-B can be linked to Namespace B, and so forth.
+
+
+### Egress Gateway and ACI
+{: .no_toc }
+We can harness the capabilities of ACI Endpoint Security Groups (ESGs) to develop an efficient network design with the following structure:
+
+* Dedicated ESG for Egress Gateway Traffic: The nodes performing egress will be configured with an additional Subnet that can be then classified into ESGs 
+* Cilium Egress Gateway Policies: Implement Cilium Egress Gateway policies to associate specific namespaces with designated gateway nodes, each with a fixed egress IP address. This mapping ensures consistent and predictable IP addresses for the Outbound cluster traffic.
+* ESG Classification on Egress IPs: Apply ESG classification to the egress IPs to streamline network management and policy enforcement, enhancing the security and control over outbound traffic at a namespace level. 
+
+It is important to note that this design specifically addresses traffic leaving the cluster. Internal cluster traffic will remain unaffected by these configurations. This ensures that while outbound traffic is tightly controlled and secured, cluster-local communications continue to operate without interruption.
+
+![Egress Gateway and ESGs](../images/egress.png)
+Egress Gateway traffic flows
+
+{: .note}
+The Egress Gateway feature can be configured to advertise the egress IP via BGP, which is a valid design choice. However, since ACI is limited to a maximum of 250 external EPGs per leaf per L3Out, it is more scalable to classify the egress IP within an ESG so that all the 250 available external EPGs can be used for Services.
+
 
 ## Design trade offs
 

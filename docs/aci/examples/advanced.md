@@ -119,13 +119,15 @@ spec:
       enabled: true
       metrics:
         enabled:
-          - dns:labelsContext=source_namespace,destination_namespace
-          - drop
-          - tcp
-          - flow
-          - icmp
-          - http
-          - policy:sourceContext=app|workload-name|pod|reserved-identity;destinationContext=app|workload-name|pod|dns|reserved-identity;labelsContext=source_namespace,destination_namespace
+          - "dns:query;ignoreAAAA;labelsContext=source_namespace,source_workload,destination_namespace,destination_workload;sourceContext=workload-name|pod-name|dns|reserved-identity;destinationContext=workload-name|pod-name|dns|reserved-identity"
+          - "drop:labelsContext=source_namespace,source_workload,destination_namespace,destination_workload;sourceContext=workload-name|pod-name|dns|reserved-identity;destinationContext=workload-name|pod-name|dns|reserved-identity"
+          - "flow:labelsContext=source_namespace,source_workload,destination_namespace,destination_workload;sourceContext=workload-name|pod-name|dns|reserved-identity;destinationContext=workload-name|pod-name|dns|reserved-identity"
+          - "flows-to-world:labelsContext=source_namespace,source_workload;sourceContext=workload-name|pod-name|dns|reserved-identity"
+          - "httpV2:exemplars=true;labelsContext=source_namespace,source_workload,source_app,destination_namespace,destination_workload,destination_app,traffic_direction;sourceContext=workload-name|pod-name|dns|reserved-identity;destinationContext=workload-name|pod-name|dns|reserved-identity"
+          - "icmp:labelsContext=source_namespace,source_workload,destination_namespace,destination_workload;sourceContext=workload-name|pod-name|dns|reserved-identity;destinationContext=workload-name|pod-name|dns|reserved-identity"
+          - "kafka:labelsContext=source_namespace,source_workload,source_app,destination_namespace,destination_workload,destination_app,traffic_direction;sourceContext=workload-name|pod-name|dns|reserved-identity;destinationContext=workload-name|pod-name|dns|reserved-identity"
+          - "policy:labelsContext=source_namespace,source_workload,destination_namespace,destination_workload;sourceContext=workload-name|pod-name|dns|reserved-identity;destinationContext=workload-name|pod-name|dns|reserved-identity"
+          - "tcp:labelsContext=source_namespace,source_workload,destination_namespace,destination_workload;sourceContext=workload-name|pod-name|dns|reserved-identity;destinationContext=workload-name|pod-name|dns|reserved-identity" 
         serviceMonitor:
           enabled: true
         dashboards:

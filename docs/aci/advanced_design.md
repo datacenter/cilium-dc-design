@@ -54,9 +54,35 @@ Centralized Routing
 {: .note }
 This design requires ACI 6.1(2) or above as the Propagate Next Hop and Ignore IGP Metric features are both needed.
 
-## Egress Nodes
+## Cilium Egress design
 
-These nodes will be configured with two interfaces. One interface for the node and a dedicated interface for egress:
+When it comes to the Cilium Egress design there are a two options we can evaluate based on our requirements. 
+
+### Egress IP advertisement Over BGP (Preferred Option)
+
+Cilium can Advertise the Egress IP over BGP. This can be done easily by adding in the `IsovalentBGPAdvertisement` CRD the `advertisementType: EgressGateway`
+We can then use ACI external EPGs to classify the egress traffic and apply contracts to it. 
+
+If ACI external EPGs scalability is an issue and a Firewall is anyway required we recommend using a single External EPG matching on the whole `EgressGateway` subnet and leverage Service Graph redirection to send the traffic to the Firewall.
+
+This options keeps the design extremely simple and clean, all the nodes are identical and connect to ACI via a single L3OUT. 
+
+### Egress IP and ESGs
+
+We can harness the capabilities of ACI Endpoint Security Groups (ESGs) to develop an efficient network design with the following structure:
+
+* Dedicated ESGs for Egress Gateway Traffic: The nodes performing egress will be configured with an additional Subnet that can be then classified into ESGs 
+* Cilium Egress Gateway Policies: Implement Cilium Egress Gateway policies to associate specific namespaces with designated gateway nodes, each with a fixed egress IP address. This mapping ensures consistent and predictable IP addresses for the Outbound cluster traffic.
+* ESG Classification on Egress IPs: Apply ESG classification to the egress IPs to streamline network management and policy enforcement, enhancing the security and control over outbound traffic at a namespace level. 
+
+It is important to note that this design specifically addresses traffic leaving the cluster. Internal cluster traffic will remain unaffected by these configurations. This ensures that while outbound traffic is tightly controlled and secured, cluster-local communications continue to operate without interruption.
+
+![Egress Gateway and ESGs](../images/egress.png)
+Egress Gateway traffic flows
+
+#### Egress Nodes Requirements
+
+The Egress nodes will be configured with two interfaces. One interface for the node and a dedicated interface for egress:
 * The node interface will be placed behind the L3Out to simplify node-to-node communication.
   * It is not required for the `egress nodes` to establish BGP peering if they are only used for Egress traffic.
 * The egress interface will be connected to an EPG and will be used for the egress gateway feature for POD initiated traffic. 
@@ -65,6 +91,7 @@ These nodes will be configured with two interfaces. One interface for the node a
 For the nodes with Multiple interface is fundamental to ensure that the kubelet’s node-ip is set correctly on each node. In this design this must be the interface placed behind the ACI L3Out.
 Cilium does not have the ability to select which interface is used for pod to pod E/W routing and will use the kubelet’s node IP interface.
 
+##### Routing Considerations
 By default traffic received on the egress nodes from the EPG would be returned to the client via the L3OUT Interface resulting in traffic drops.
 To ensure return traffic is routed back to the EPG we can:
 
@@ -75,7 +102,12 @@ To ensure return traffic is routed back to the EPG we can:
   * the service IP pool 
   is going to use route table 100, thus ensuring that traffic will be sent back to the L3Out, which preserves routing symmetry.
 
-{% include_relative cilium_egress_design.md %}
+Regardless of the design choice the only other consideration is how many `egress nodes` to deploy and whether to dedicate them only for this purpose.
+Ideally, the design should have a minimum of two `egress nodes` distributed between two pairs of leaves. This will provide redundancy in case of `egress nodes` or ACI leaf failure or during upgrades.
+Depending on the cluster scale and application requirements, dedicated `egress nodes` could be beneficial for the same reasons discussed for the `inress nodes`.
+
+{: .note }
+A single ingress node can be configured with multiple IP addresses, enabling it to support multiple PODs identities. This configuration allows us to efficiently reuse the same node across different namespaces. For example, IP-A can be associated with Namespace A, while IP-B can be linked to Namespace B, and so forth.
 
 
 ## Design trade offs
@@ -85,7 +117,7 @@ This design aims to provide you with an easy and high scalable design; however, 
 1. External services can only be advertised as “Cluster Scope”: This requirement is imposed by Maglev. This drawback is however of minor consequence thanks for Direct Server Return. 
 2. Potential bottlenecks for egress traffic
 3. Node IP is "hidden" behind the L3out so there is a small loss of visibility compared to the Simplicity first design.
-4. Ingress nodes have two interfaces with different route tables, this adds additional complexity.
+4. (Depending on the Egress design choice) Ingress nodes have two interfaces with different route tables, this adds additional complexity.
 
 For issue (1) there is no solution. Issue (2) can be easily addressed with either vertical or horizontal scaling.
 

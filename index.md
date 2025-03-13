@@ -75,7 +75,9 @@ Cilium and Cilium Enterprise both provide advanced networking, security, and obs
 * Professional Support: Customers receive professional support, including SLAs, access to a dedicated support team, and potentially custom engineering services.
 * Enterprise Integration: Designed to integrate seamlessly into large-scale enterprise environments, offering improved reliability, scalability, and ease of management.
 
-This design best practice document is tailored for enterprise customers, utilizing Cilium Enterprise features. When enterprise features are mentioned, alternatives for the open-source version will be provided if possible.
+{: .note }
+Disclaimer: This document has been developed exclusively with **Cilium Enterprise** version in mind. No support or guidance can be provided for Cilium open-source version. 
+Cisco TAC does not provide support for Cilium and Cilium Enterprise support can be purchased separately 
 
 ## Goals
 
