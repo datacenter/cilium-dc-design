@@ -17,6 +17,8 @@ The following subnets will be used:
 * Egress Node subnet: `192.168.2.80/28`
 * Load-balancer services pool: `192.168.2.48/28`
 
+{: .note }
+In this example the ESG configuration is optional and can be completely removed if you choose to advertise the Egress IP over BGP as explained in the [Cilium Egress design](../../advanced_design/#cilium-egress-design) section.
 
 ![alt text](../images/openshift-topology.png)
 ## ACI configuration
@@ -228,6 +230,10 @@ spec:
       selector:
         matchLabels:
           advertise: bgp
+    - advertisementType: EgressGateway
+      selector:
+        matchLabels:
+          advertise: bgp
 ---
 apiVersion: isovalent.com/v1alpha1
 kind: IsovalentBFDProfile
@@ -393,6 +399,8 @@ The egress configuration is extremely simple: once the nodes are configured with
 * Select wich nodes are part of the `egressGroups` with a `nodeSelector`
 * Specify which `egressIP` a node has to use. Note: The `egressIP` needs to be pre-configured on the node. Commonly as a secondary IP on the interface. This should be done prior to deploying the policy.
 * Select which pods the `IsovalentEgressGatewayPolicy` should apply to by using a `podSelector`
+* If using BGP advertisement add the `advertise: bgp` label
+
 
 For example the configuration below will NAT all traffic (`destinationCIDRs`) initiated from pods in the `egress-1` namespace (`io.kubernetes.pod.namespace`) using two nodes (`kubernetes.io/hostname`) and two IPs (`egressIP: 192.168.2.83 and 192.168.2.84`)
 
@@ -401,6 +409,8 @@ apiVersion: isovalent.com/v1
 kind: IsovalentEgressGatewayPolicy
 metadata:
   name: egress-1
+  labels:
+    advertise: bgp
 spec:
   destinationCIDRs:
   - 0.0.0.0/0
@@ -420,7 +430,7 @@ spec:
 
 ```
 
-These two `egressIPs` can now easily be mapped by using an IP selector on the ESG. This allows for administrators to control access per application by using contracts. This example shows access control per namespace, but this can also be narrowed down further to a subset of pods.
+These two `egressIPs` can now easily be mapped in an External EPG or ESG. This allows for administrators to control access per application by using contracts. This example shows access control per namespace, but this can also be narrowed down further to a subset of pods.
 
 
 [Next](/cilium-dc-design/docs/aci/examples/simple/){: .btn }
