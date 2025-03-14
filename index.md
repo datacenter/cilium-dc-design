@@ -18,6 +18,19 @@ The Isovalent Best Practices for the Modern Datacenter Documentation Site serves
 
 We welcome contributions from the community! If you have insights or improvements you'd like to share, please feel free to submit a pull request or open an issue on our GitHub repository.
 
+## Document Structure
+
+This design document is composed by the following chapter/sections
+
+- [Fabric Agnostic Features](docs/fabric_agnostic_features/): This chapter outlines the Cilium features that are common across all designs.
+- **ACI Designs:**
+  - [Simplicity Design](docs/aci/simplicity_design/): The most straightforward design to get you started, ideal for testing basic functionalities.
+  - [Advanced Design](docs/aci/advanced_design/): An optimized, high-scale design that trades configuration simplicity for increased scalability. (Recommended)
+  - [ACI BGP Design](docs/aci/aci_bgp_design/): This section provides details on the ACI BGP configuration, which remains consistent regardless of the chosen design.
+  - [Scale Testing](docs/aci/aci_tested_scale/): A collection of scale metrics and tests conducted for the Advanced design.
+  - [Config Examples](docs/aci/examples/examples/): Complete configuration examples for both ACI and Kubernetes/OpenShift.
+
+
 ## Kubernetes 
 
 Kubernetes has become the de facto standard for container orchestration in today's cloud-native ecosystem, providing a robust framework for deploying, scaling, and managing containerized applications. As enterprises increasingly adopt Kubernetes, they are often faced with the challenge of ensuring seamless network connectivity and service discovery across diverse and dynamic environments.
@@ -152,3 +165,6 @@ This design offers a more comprehensive solution, ideal for production environme
 
 [Next](/cilium-dc-design/docs/fabric_agnostic_features/){: .btn }
 {: .text-right }
+
+
+

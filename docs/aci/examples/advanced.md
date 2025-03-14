@@ -1,7 +1,8 @@
 ---
 title: Advanced Design Config Example
-parent: Config Example
+parent: Config Examples
 layout: default
+nav_order: 2
 ---
 
 # Example configuration - Advanced Design With OpenShift

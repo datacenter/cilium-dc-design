@@ -1,7 +1,8 @@
 ---
 title: Simple Design Config Example
-parent: Config Example
+parent: Config Examples
 layout: default
+nav_order: 1
 ---
 
 # Example configuration - Simple Design
