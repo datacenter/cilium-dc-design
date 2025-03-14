@@ -44,10 +44,6 @@ There is no strict requirement of the physical connectivity for the cluster EPG 
 
 ## Selective BGP peering for service advertisement
 
-{: .note }
-Might remove this section and use [L2 Service Advertisements](https://docs.cilium.io/en/stable/network/l2-announcements/#l2-announcements) to make this even simpler so we will have 2 design one that is super simple and lives in an EPG
-and one that is more complex with advanced feature and lives all in an L3OUT
-
 In this design, a dedicated L3Out is created in ACI for external service advertisement for a subset of Kubernetes nodes that will be, from now on, be called `ingress nodes`.
 
 These nodes will be configured with two interfaces. It is convenient to keep the `ingress nodes` in the cluster EPG, because it simplifies node-to-node communication and allows the use of DHCP relay for node provisioning.
