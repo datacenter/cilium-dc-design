@@ -68,7 +68,7 @@ This issue can be minimized by first removing the node from BGP Peering.
 
 ### Cilium Upgrade
 
-The BFD and BGP Process are running on the Cilium POD. Restarting the Cilium POD for any reason will result in the BFD adjacency however thank to BGP Graceful Restart the impact is minimal.
+The BFD and BGP Process are running on the Cilium POD. Restarting the Cilium POD for any reason will result in the BFD adjacency to go down however, thanks to BGP Graceful Restart the impact is minimal.
 
 **Test:**
 
