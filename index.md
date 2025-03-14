@@ -110,7 +110,10 @@ Regardless of the options you choose **both** designs can provide you with the f
   {: .warning } 
   Please be aware of the DHCP relay limitations for L3outs. See: [DHCP Limitations](https://www.cisco.com/c/en/us/td/cilium-dc-design/docs/dcn/aci/apic/6x/basic-configuration/cisco-apic-basic-configuration-guide-61x/provisioning-core-aci-fabric-services-61x.html#guidelines-and-limitations-for-a-dhcp-relay-policy)
 
-### Simplicity-First Approach Design
+### Simplicity-First Approach Design 
+
+This design serves as an excellent starting point for quickly getting up and running, allowing you to explore the capabilities of Cilium with ease.
+
 * Objectives: 
   * Ability to run on any ACI Software version
   * Provide a straightforward and easily maintainable solution.
@@ -126,7 +129,9 @@ Regardless of the options you choose **both** designs can provide you with the f
   * Cilium selects service backends randomly and ensures that the traffic remains sticky to the backend. However, this method can cause issues if a node fails or if there is a change in the ECMP Next Hops. This can result into traffic being sent to a different Kubernetes node, which lacks context on which backend is currently serving the connection. This can lead to unexpected disruptions on connection-oriented protocols like TCP, as client connections are being reset by the newly selected backends.
   * May not fully optimize network throughput in scenarios with complex traffic patterns
   
-### Advanced Design with Maglev for ECMP Flow Consistency
+### Advanced Design with Maglev for ECMP Flow Consistency (Recommended)
+
+This design offers a more comprehensive solution, ideal for production environments. It incorporates advanced features and optimizations that are recommended for leveraging the full potential of Cilium in a stable and scalable manner. While it may require more initial setup and configuration, this design ensures robust performance and resilience, making it well-suited for enterprise-level deployments.
 
 * Objectives: 
   * Maximize network performance and ensure consistent flow distribution in ECMP scenarios with [Maglev](docs/fabric_agnostic_features/#maglev).
