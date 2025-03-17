@@ -277,7 +277,7 @@ spec:
   ebgpMultihop: 1
   gracefulRestart:
     enabled: true
-    restartTimeSeconds: 15
+    restartTimeSeconds: 120
   families:
     - afi: ipv4
       safi: unicast
