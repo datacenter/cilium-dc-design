@@ -72,13 +72,9 @@ Both ACI and Cilium will be configured to use BGP Graceful Restart. When a BGP s
 
 Bidirectional Forwarding Detection (BFD) is a network protocol used to detect faults in the path between two forwarding engines, such as routers, and is commonly used in conjunction with routing protocols like BGP (Border Gateway Protocol). BFD enhances BGP operations by providing quick and reliable detection of link failures, enabling faster failover and improved network resilience. Thanks to this capability we can achieve sub second failure detection for our BGP Peering.
 
-### BGP timers tuning with Cilium OSS
+{: .warning }
+If BFD is configured for sub-second failure detection and you are running virtual machines, a live migration may cause BFD to perceive the node as down. Consequently, the BGP session will be reset, leading to the withdrawal of all routes advertised by the affected node from the routing table.
 
-At time of writing, Cilium OSS does not support Bidirectional Forwarding Detection (BFD). In order to achieve faster convergence, we must rely on BGP timers tuning. Since the number of `ingress nodes` is limited, this should not pose any scalability issues on the border leaves.
-
-The ACI BGP timers can be set to 1s/3s to allow for faster convergence.
-
-**Note:** Do not perform this step if you choose to use Cilium Enterprise with BFD
 
 ### BGP hardening (optional)
 

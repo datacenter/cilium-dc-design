@@ -76,7 +76,7 @@ Restart the Cilium POD (or Upgrading Cilium)
 
 **Impact:**
 
-Minimal. 
+Minimal to none. A Cilium Agent POD restart triggers Graceful Restart.
 
 ## Reloading an Anchor Node
 **Test:**

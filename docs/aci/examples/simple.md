@@ -82,6 +82,9 @@ The following subnets will be used:
     * Echo Admin State: Enabled
   * Create a `BFD Interface Profile` under the `Logical Interface Profile` and select the `BFD Interface Policy`
 
+  {: .warning }
+  If BFD is configured for sub-second failure detection and you are running virtual machines, a live migration may cause BFD to perceive the node as down. Consequently, the BGP session will be reset, leading to the withdrawal of all routes advertised by the affected node from the routing table.
+
 ## Kubernetes
 
 Cilium can be installed on any Kubernetes distribution and its configuration is mostly identical regardless of the distribution of choice. This design has been tested with:

@@ -72,6 +72,10 @@ In this example the ESG configuration is optional and can be completely removed 
     * Echo Receive Internal: 50
     * Echo Admin State: Enabled
   * Create a `BFD Interface Profile` under the `Logical Interface Profile` and select the `BFD Interface Policy`
+  
+  {: .warning }
+  If BFD is configured for sub-second failure detection and you are running virtual machines, a live migration may cause BFD to perceive the node as down. Consequently, the BGP session will be reset, leading to the withdrawal of all routes advertised by the affected node from the routing table.
+
 
 ## Cilium Enterprise
 
