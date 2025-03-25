@@ -1,0 +1,1531 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tetragon-tcp-latency-socket
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  tetragon-tcp-latency-socket.json: |-
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 70,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 141,
+          "panels": [],
+          "title": "SRTT Overview",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "percentage",
+                "steps": [
+                  {
+                    "color": "dark-blue",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 50
+                  }
+                ]
+              },
+              "unit": "pkt"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 0,
+            "y": 1
+          },
+          "id": 137,
+          "options": {
+            "displayMode": "gradient",
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "namePlacement": "auto",
+            "orientation": "vertical",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "valueMode": "color"
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (le) (increase(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range]))",
+              "format": "heatmap",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "__auto",
+              "queryType": "randomWalk",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "SRTT [μs] histogram",
+          "transformations": [],
+          "type": "bargauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 139,
+          "options": {
+            "calculate": false,
+            "cellGap": 1,
+            "cellValues": {
+              "unit": "pkt"
+            },
+            "color": {
+              "exponent": 0.5,
+              "fill": "dark-orange",
+              "min": 0,
+              "mode": "scheme",
+              "reverse": false,
+              "scale": "exponential",
+              "scheme": "Cividis",
+              "steps": 64
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": 1e-9
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "tooltip": {
+              "show": true,
+              "yHistogram": false
+            },
+            "yAxis": {
+              "axisPlacement": "left",
+              "reverse": false,
+              "unit": "µs"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (le) (increase(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval]))",
+              "format": "heatmap",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "__auto",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "SRTT histogram over time",
+          "transformations": [],
+          "type": "heatmap"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "super-light-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 4,
+            "x": 0,
+            "y": 13
+          },
+          "id": 143,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by (le) (increase(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range])))",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Median SRTT",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 4,
+            "x": 4,
+            "y": 13
+          },
+          "id": 145,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.9, sum by (le) (increase(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range])))",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "P90 SRTT",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "dark-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 4,
+            "x": 8,
+            "y": 13
+          },
+          "id": 147,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by (le) (increase(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range])))",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "P95 SRTT",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-BlPu",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 13
+          },
+          "id": 149,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "9.1.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by (le) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])))",
+              "interval": "",
+              "legendFormat": "Median",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.9, sum by (le) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])))",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "P90",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])))",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "P95",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "SRTT quantiles",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 21
+          },
+          "id": 22,
+          "panels": [],
+          "title": "SRTT Quantiles by K8s Pod & Binary",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-BlPu",
+                "seriesBy": "max"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 24,
+            "x": 0,
+            "y": 22
+          },
+          "id": 79,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {
+              "titleSize": 12
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "topk(5, histogram_quantile(0.5, sum by (le, namespace, pod, binary) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))) > 0)",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{namespace}}/{{pod}} > {{binary}}",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Median SRTT (top 5)",
+          "transformations": [],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-BlPu",
+                "seriesBy": "max"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 24,
+            "x": 0,
+            "y": 33
+          },
+          "id": 164,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {
+              "titleSize": 12
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "topk(5, histogram_quantile(0.90, sum by (le, namespace, pod, binary) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))) > 0)",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{namespace}}/{{pod}} > {{binary}}",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "P90 SRTT (top 5)",
+          "transformations": [],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-BlPu",
+                "seriesBy": "max"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 24,
+            "x": 0,
+            "y": 44
+          },
+          "id": 165,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {
+              "titleSize": 12
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "topk(5, histogram_quantile(0.95, sum by (le, namespace, pod, binary) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))) > 0)",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{namespace}}/{{pod}} > {{binary}}",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "P95 SRTT (top 5)",
+          "transformations": [],
+          "type": "stat"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 55
+          },
+          "id": 167,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "µs"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 23
+              },
+              "id": 176,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "pluginVersion": "10.2.2",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, histogram_quantile(0.5, sum by (le, node, binary) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Median SRTT (top 5)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "µs"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 34
+              },
+              "id": 177,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "pluginVersion": "10.2.2",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, histogram_quantile(0.9, sum by (le, node, binary) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "P90 SRTT (top 5)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "µs"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 45
+              },
+              "id": 178,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "pluginVersion": "10.2.2",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, histogram_quantile(0.95, sum by (le, node, binary) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "P95 SRTT (top 5)",
+              "transformations": [],
+              "type": "stat"
+            }
+          ],
+          "title": "SRTT Quantiles by Node & Binary",
+          "type": "row"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 56
+          },
+          "id": 169,
+          "panels": [],
+          "title": "SRTT Quantiles by Remote DNS Name",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-BlPu",
+                "seriesBy": "max"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 24,
+            "x": 0,
+            "y": 57
+          },
+          "id": 179,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {
+              "titleSize": 12
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "topk(5, histogram_quantile(0.5, sum by (le, dstdns) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))) > 0)",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{dstdns}}",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Median SRTT (top 5)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(Value)",
+                "renamePattern": "<empty>"
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-BlPu",
+                "seriesBy": "max"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 24,
+            "x": 0,
+            "y": 68
+          },
+          "id": 181,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {
+              "titleSize": 12
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "topk(5, histogram_quantile(0.9, sum by (le, dstdns) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))) > 0)",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{dstdns}}",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "P90 SRTT (top 5)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(Value)",
+                "renamePattern": "<empty>"
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-BlPu",
+                "seriesBy": "max"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "µs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 24,
+            "x": 0,
+            "y": 79
+          },
+          "id": 180,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {
+              "titleSize": 12
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "topk(5, histogram_quantile(0.95, sum by (le, dstdns) (rate(tetragon_socket_stats_srtt_bucket{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))) > 0)",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{dstdns}}",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "P95 SRTT (top 5)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(Value)",
+                "renamePattern": "<empty>"
+              }
+            }
+          ],
+          "type": "stat"
+        }
+      ],
+      "refresh": "1m",
+      "revision": 1,
+      "schemaVersion": 38,
+      "tags": [
+        "Tetragon"
+      ],
+      "templating": {
+        "list": [
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total, cluster)",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "cluster",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total, cluster)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\"}, namespace)",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "namespace",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\"}, namespace)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\"}, workload)",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "workload",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\"}, workload)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\"}, pod)",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "pod",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\"}, pod)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\"}, node)",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "node",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\"}, node)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\"}, binary)",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "binary",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\"}, binary)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "query_result(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\"} or tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\"})",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "label": "remote DNS name",
+            "multi": true,
+            "name": "dstdns",
+            "options": [],
+            "query": {
+              "query": "query_result(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\"} or tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\"})",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "/dstdns=\"([^\"]+)\"/",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-30m",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Tetragon / TCP Latency / Socket",
+      "uid": "kb48Ke7Sz",
+      "version": 7,
+      "weekStart": ""
+    }
+
