@@ -217,7 +217,7 @@ spec:
       storageClassName: lvms-vg1
 ```
 
-3) We need not to tell Grafana to use the in-cluster prometheus instance as a `DataSource` to do this we need to:
+3) We need now to tell Grafana to use the in-cluster prometheus instance as a `DataSource` to do this we need to:
   - Add the `grafana ServiceAccount` to the `cluster-monitoring-view` Role
   - Create a `token` to use to Authenticate towards Prometheus
   - Create a `GrafanaDatasource` 
