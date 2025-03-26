@@ -66,9 +66,10 @@ oc -n tetragon edit cm tetragon-operator-config
 oc delete pod -l app.kubernetes.io/name=tetragon-operator
 
 oc -n tetragon get svc
-NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)     AGE
-tetragon            ClusterIP   172.31.13.78    <none>        2112/TCP    28h  #<== Service Monitor for tetragon 
-tetragon-catalog    ClusterIP   172.31.47.22    <none>        50051/TCP   28h
+NAME                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
+tetragon            ClusterIP   172.31.245.244   <none>        2112/TCP    23h
+tetragon-catalog    ClusterIP   172.31.47.22     <none>        50051/TCP   2d4h
+tetragon-operator   ClusterIP   172.31.247.192   <none>        2113/TCP    40m
 ```
 5) Create a TracingPolicy to collect the metrics we care about
 
