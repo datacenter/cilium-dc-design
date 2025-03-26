@@ -61,7 +61,7 @@ containers:
 4) Enable the `serviceMonitor` feature so that Prometheus can scrape the metrics by editing the `tetragon-operator-config` and restart the Tetragon Operator to pick up the config changes
 ```bash
 oc -n tetragon edit cm tetragon-operator-config
-## Set to true the instances of agentDaemonSet.serviceMonitorEnabled variable. ##
+## Set to true the 2 instances of the serviceMonitorEnabled variable. Yes there are 2 Instances!
 
 oc delete pod -l app.kubernetes.io/name=tetragon-operator
 
