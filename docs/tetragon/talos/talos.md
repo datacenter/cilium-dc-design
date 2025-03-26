@@ -61,4 +61,4 @@ helm upgrade --install tetragon isovalent/tetragon --version 1.15.1 \
 # Grafana
 
 Once Tetragon is installed Prometheus should automatically picks up the Tetragon `servicemonitors` and start ingesting metrics.
-For simplicity we have collected a few dashboards [here](../../grafana/dashboards) you should be able to just apply them as they are. Just remember to apply them  to the namespace where `kube-prometheus-stack` is deployed.
+For simplicity we have collected a few dashboards [here](https://github.com/datacenter/cilium-dc-design/tree/main/docs/tetragon/grafana/dashboards) you should be able to just apply them as they are. Just remember to apply them  to the namespace where `kube-prometheus-stack` is deployed.
