@@ -251,4 +251,4 @@ spec:
 EOF
 ```
 
-4) The Grafana Operator uses the `GrafanaDashboard` CRD to add new dashboards. For simplicity we have collected a few dashboards [here](../../grafana/Operator/dashboards) you should be able to just apply them as they are. Start by applying `01-folders.yaml` first.
+4) The Grafana Operator uses the `GrafanaDashboard` CRD to add new dashboards. For simplicity we have collected a few dashboards [here](../../grafana/operator/dashboards) you should be able to just apply them as they are. Start by applying `01-folders.yaml` first.
