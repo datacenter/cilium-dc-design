@@ -5,102 +5,60 @@ parent: Tetragon
 nav_order: 2
 ---
 
+{: .warning }
+You will most likely have to customize the YAML Examples or CLI/Versions in this section to suit your needs
+
+# Pre Requisite
+
+It is expected that you have installed the [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack). If you are installing in a **lab** and you want to quick config example that provide the stack running on Emphemeral Storage you can use these values:
+
+{: .warning }
+**Do not use for production**: This deploys an instance without Authentication that will accept ScrapingConfigs from any namespaces. How to deploy a production grade [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) is outside the scope of this design guide.
+
+
+```yaml
+defaultRules:
+  rules:
+    kubeProxy: false
+    windows: false
+grafana:
+  persistence:
+    enabled: false
+  service:
+    service:
+    enabled: true
+    type: LoadBalancer  # You might need to change this to use an ingress controller instead
+kubeProxy:
+  enabled: false
+prometheus:
+  prometheusSpec:
+    ### find any pod, scrapeConfig or servicemonitor in the cluster and don't worry about how they are labeled so everything should be scraped both cluster metrics as well as tetragon.
+    scrapeConfigSelectorNilUsesHelmValues: false
+    scrapeConfigSelector: {}
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    podMonitorSelector: {}
+    podMonitorSelectorNilUsesHelmValues: false
+    logLevel: info
+kubeApiServer:
+  tlsConfig:
+    insecureSkipVerify: true
+```
+
+# Installing Tetragon
+
+Tetragon can be easilly isntalled via Helm
+
 ```bash
-oc project grafana-operator
-oc create ns tetragon
+helm repo add isovalent https://helm.isovalent.com
+helm repo update
 
-# Install Tetragon https://docs.isovalent.com/operations-guide/tetragon/installation/openshift.html
-oc -n tetragon edit cm tetragon-operator-config
+helm upgrade --install tetragon isovalent/tetragon --version 1.15.1 \
+--namespace tetragon --create-namespace --set tetragon.prometheus.serviceMonitor.enabled=true --set tetragonOperator.prometheus.serviceMonitor.enabled=true \
+--set tetragon.prometheus.enabled=true --set tetragonOperator.prometheus.enabled=true
+```
 
-# Set serviceMonitorEnabled: true
-# There are 2 instances of this key 
+# Grafana
 
-
-oc label ns tetragon openshift.io/cluster-monitoring="true"
-
-oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-sa
-oc create token grafana-sa --duration=4294967296s
-# SAVE THE TOKEN and 
-
-cat << EOF | oc apply -f -
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDatasource
-metadata:
-  name: prometheus
-spec:
-  instanceSelector:
-    matchLabels:
-      dashboards: "grafana-a"
-  datasource:
-    name: Prometheus
-    u
-    type: prometheus
-    access: proxy
-    url: https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
-    isDefault: true
-    jsonData:
-      timeInterval: "5s"
-      httpHeaderName1: 'Authorization'
-      tlsSkipVerify: true
-    secureJsonData:
-      httpHeaderValue1: 'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InBVUWk4b216bWJPYjlycUdPdzVNSzhkSlpndTg4STlrRFNybGFTTWZlRkEifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjIl0sImV4cCI6NjAzNzc1MDQ1OSwiaWF0IjoxNzQyNzgzMTYzLCJpc3MiOiJodHRwczovL2t1YmVybmV0ZXMuZGVmYXVsdC5zdmMiLCJqdGkiOiIyNDMzNDYyZS1iM2ZlLTQyMTUtOTI1Ni03MjNmNmQyNzZmNTAiLCJrdWJlcm5ldGVzLmlvIjp7Im5hbWVzcGFjZSI6ImdyYWZhbmEtb3BlcmF0b3IiLCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiZ3JhZmFuYS1zYSIsInVpZCI6ImRhNjUyNWU3LWUxZTktNGExZC1iZTE0LWQ1MzE3YzhjOTFkMiJ9fSwibmJmIjoxNzQyNzgzMTYzLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6Z3JhZmFuYS1vcGVyYXRvcjpncmFmYW5hLXNhIn0.NaxXVxEKnEmlUUAD33YkJ9hDoQ4Lkl4MD4zAYnfTdHrAI9WtW1uS43kyWzAjHb0AySdGwKqF44f8JqmG5_4qIhBy4GaRAhOJJtjJW8d7Kh70zuJuW5upvYhRlE3LDUljq066OsMHemETQBC067Rv5GcI-v-LOxoXluMnWk2yFA2aOZKifPE_gesxQMNtl8n1B1X4mQ0W6CRjJrElvO4nCbe8KKRJFOJzUthrtRoRp1DEDd92A95kbtbgMYYI0iGi85e40svIUtEcskfIrozdhGQ0bUc1Bxgq00dKYiby0XCI7cN1vmKIcqHOBMATMPWJo6BjzY48889dSEuC8OKg0UpXTIZhQk_dWJJh0YUkz32LjTxdsFmGxIC-aq1C_bWGvrUuoUJsum0_-18bvTr19Ir92VTyEeh5_SzBh74lBx3SXDVJutz6gG2EY_1pnHns8dGxr2Lv9WGsZwLhbA6NftEITxs7KP39cANsyV9YkzrL9tPeSRmdNrLDSwFdjfe2Nr7qX8SKKxiWzv5m6alEKulw9S62w35gx5UKURQ0CtsHgJ8iOau8yOqmlHrrMcyOEfRmB9nPbg7xT_k1MrmrlYXOlYR-4z5WJ5fQylVoWUkbgxhhw0iaVYle6TRBdE-C1BiYng4lMEOqLTG4oNsQokGR8xJj-kZ3YuSoNNAA5ds'
-EOF
-
-# Add the role so that the prometheus SA can read the POD/Services 
-cat << EOF | oc apply -n tetragon -f -
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: prometheus-k8s
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - services
-  - endpoints
-  - pods
-  verbs:
-  - get
-  - list
-  - watch
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: prometheus-k8s
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: prometheus-k8s
-subjects:
-- kind: ServiceAccount
-  name: prometheus-k8s
-  namespace: openshift-monitoring
-EOF
-
-cat << EOF | oc apply -n tetragon -f -
-apiVersion: cilium.io/v1alpha1
-kind: TracingPolicy
-metadata:
-  name: network-tracing
-spec:
-  parser:
-    dns:
-      enable: true
-    interface:
-      enable: true
-      packet: true
-    tcp:
-      enable: true
-      statsInterval: 20
-    udp:
-      cgroup: true
-      enable: true
-      statsInterval: 20
-    http:
-        enable: true
-        selectors:
-        - matchPorts:
-          - 8080
-          - 80 
-EOF
+Once Tetragon is installed Prometheus should automatically picks up the Tetragon `servicemonitors` and start ingesting metrics.
+For simplicity we have collected a few dashboards [here](../../grafana/dashboards) you should be able to just apply them as they are. Just remember to apply them  to the namespace where `kube-prometheus-stack` is deployed.

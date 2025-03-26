@@ -5,6 +5,9 @@ parent: Tetragon
 nav_order: 1
 ---
 
+{: .warning }
+You will most likely have to customize the YAML Examples or CLI/Versions in this section to suit your needs
+
 # Installing Tetragon
 
 In order to Install tetragon there are a few steps we need to follow:
@@ -41,6 +44,20 @@ At the time of writing the most recent version of the tetragon-operator-index is
 {: .note }
 At the time of writing the most recent version of the tetragon is `1.15.0`
 
+Edit the Tetragon Operator config and ensure the `--metrics-bind-address=:2113` is present as show below.
+
+```bash
+oc edit ClusterServiceVersion  tetragon-operator.v1.15.0
+
+#Find this section
+
+containers:
+- args:
+  - serve
+  - --config-dir=/etc/tetragon/operator.conf.d/
+  - --metrics-bind-address=:2113
+```
+
 4) Enable the `serviceMonitor` feature so that Prometheus can scrape the metrics by editing the `tetragon-operator-config` and restart the Tetragon Operator to pick up the config changes
 ```bash
 oc -n tetragon edit cm tetragon-operator-config
@@ -53,8 +70,64 @@ NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)     AGE
 tetragon            ClusterIP   172.31.13.78    <none>        2112/TCP    28h  #<== Service Monitor for tetragon 
 tetragon-catalog    ClusterIP   172.31.47.22    <none>        50051/TCP   28h
 ```
+5) Create a TracingPolicy to collect the metrics we care about
 
-5) Create a role in the tetragon namespace so that Prometheus can scrape it:
+```bash
+cat << EOF | oc apply -n tetragon -f -
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: network-tracing
+spec:
+  parser:
+    dns:
+      enable: true
+    interface:
+      enable: true
+      packet: true
+    tcp:
+      enable: true
+      statsInterval: 20
+    udp:
+      cgroup: true
+      enable: true
+      statsInterval: 20
+    http:
+        enable: true
+        selectors:
+        - matchPorts:
+          - 8080
+          - 80 
+EOF
+
+# Check they are applied correctly
+oc exec -n tetragon  daemonsets/tetragon -- tetra tracingpolicy list
+ID   NAME              STATE     FILTERID   NAMESPACE   SENSORS                                                                         KERNELMEMORY
+1    network-tracing   enabled   0          (global)    __networkPacket_probe__,__parser_sensors__,__sockops_sensors__,layer3_sensors   305.30 kB
+```
+
+{: .warning }
+Even if Cilium is the only installed CNI the OpenShift node might still be loading the openvswitch kernel module. If this happens the Tracing policy will not be enabled successfully and you might see this error message in all the Tetragon pods:
+
+```shell
+oc logs -n tetragon daemonsets/tetragon | grep network-tracing    
+Found 8 pods, using pod/tetragon-wlhnq
+time="2025-03-24T03:35:40Z" level=warning msg="adding tracing policy failed" error="sensor __networkPacket_probe__ from collection network-tracing failed to load: failed prog /var/lib/tetragon/bpf_dev_queue_xmit.o kern_version 331264 loadInstance: opening collection '/var/lib/tetragon/bpf_dev_queue_xmit.o' failed: populating kallsyms caches: getting modules from kallsyms: assigning symbol modules: symbol dev_queue_xmit: duplicate found at address 0xffffffffc105e020 (module \"openvswitch\"): multiple kernel symbols with the same name" 
+```
+
+You can check if the module is loaded by executing this command:
+
+```
+oc debug node/<node_name>  --  /host/usr/sbin/lsmod | grep openvswitch
+openvswitch           245760  0
+nf_conncount           24576  1 openvswitch 
+```
+
+If this is the case you can follow this procedure to blacklist the module so that is not loaded:
+[How to blacklist a kernel module in OpenShift 4.x](https://access.redhat.com/solutions/6979679)
+
+
+6) Create a role in the tetragon namespace so that Prometheus can scrape it:
 
 ```bash
 cat << EOF | oc apply -n tetragon -f -
@@ -101,7 +174,9 @@ OpenShift comes pre-installed with its own Dashboards under `Observe` --> `Dashb
 This is a pretty easy tasks:
 
 1) Install the `Grafana Operator` from the `OperatorHub`
+   
 2) Create a `Grafana` Instance below an example for an instance that uses PVC to save dashboards and is exposed via a `route` 
+
 ```yaml
 apiVersion: grafana.integreatly.org/v1beta1
 kind: Grafana
@@ -138,102 +213,41 @@ spec:
       resources:
         requests:
           storage: 2Gi
-      storageClassName: localvolume
-      volumeMode: Block
+      storageClassName: lvms-vg1
 ```
 
-3) 
+3) We need not to tell Grafana to use the in-cluster prometheus instance as a `DataSource` to do this we need to:
+  - Add the `grafana ServiceAccount` to the `cluster-monitoring-view` Role
+  - Create a `token` to use to Authenticate towards Prometheus
+  - Create a `GrafanaDatasource` 
 
-
-
-
+```bash
 oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-sa
-oc create token grafana-sa --duration=4294967296s
-# SAVE THE TOKEN and 
-```
+TOKEN=`oc create token grafana-sa --duration=4294967296s`
 
-
-
-oc project grafana-operator
 cat << EOF | oc apply -f -
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
 metadata:
   name: prometheus
+  namespace: grafana-operator
 spec:
   instanceSelector:
     matchLabels:
-      dashboards: "grafana-a"
+      dashboards: "grafana"
   datasource:
-    name: Prometheus
-    u
+    name: prometheus
     type: prometheus
     access: proxy
-    url: https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
+    url: https://thanos-querier.openshift-monitoring.svc:9091
     isDefault: true
     jsonData:
       timeInterval: "5s"
       httpHeaderName1: 'Authorization'
       tlsSkipVerify: true
     secureJsonData:
-      httpHeaderValue1: 'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InBVUWk4b216bWJPYjlycUdPdzVNSzhkSlpndTg4STlrRFNybGFTTWZlRkEifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjIl0sImV4cCI6NjAzNzc1MDQ1OSwiaWF0IjoxNzQyNzgzMTYzLCJpc3MiOiJodHRwczovL2t1YmVybmV0ZXMuZGVmYXVsdC5zdmMiLCJqdGkiOiIyNDMzNDYyZS1iM2ZlLTQyMTUtOTI1Ni03MjNmNmQyNzZmNTAiLCJrdWJlcm5ldGVzLmlvIjp7Im5hbWVzcGFjZSI6ImdyYWZhbmEtb3BlcmF0b3IiLCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiZ3JhZmFuYS1zYSIsInVpZCI6ImRhNjUyNWU3LWUxZTktNGExZC1iZTE0LWQ1MzE3YzhjOTFkMiJ9fSwibmJmIjoxNzQyNzgzMTYzLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6Z3JhZmFuYS1vcGVyYXRvcjpncmFmYW5hLXNhIn0.NaxXVxEKnEmlUUAD33YkJ9hDoQ4Lkl4MD4zAYnfTdHrAI9WtW1uS43kyWzAjHb0AySdGwKqF44f8JqmG5_4qIhBy4GaRAhOJJtjJW8d7Kh70zuJuW5upvYhRlE3LDUljq066OsMHemETQBC067Rv5GcI-v-LOxoXluMnWk2yFA2aOZKifPE_gesxQMNtl8n1B1X4mQ0W6CRjJrElvO4nCbe8KKRJFOJzUthrtRoRp1DEDd92A95kbtbgMYYI0iGi85e40svIUtEcskfIrozdhGQ0bUc1Bxgq00dKYiby0XCI7cN1vmKIcqHOBMATMPWJo6BjzY48889dSEuC8OKg0UpXTIZhQk_dWJJh0YUkz32LjTxdsFmGxIC-aq1C_bWGvrUuoUJsum0_-18bvTr19Ir92VTyEeh5_SzBh74lBx3SXDVJutz6gG2EY_1pnHns8dGxr2Lv9WGsZwLhbA6NftEITxs7KP39cANsyV9YkzrL9tPeSRmdNrLDSwFdjfe2Nr7qX8SKKxiWzv5m6alEKulw9S62w35gx5UKURQ0CtsHgJ8iOau8yOqmlHrrMcyOEfRmB9nPbg7xT_k1MrmrlYXOlYR-4z5WJ5fQylVoWUkbgxhhw0iaVYle6TRBdE-C1BiYng4lMEOqLTG4oNsQokGR8xJj-kZ3YuSoNNAA5ds'
+      httpHeaderValue1: 'Bearer ${TOKEN}'
 EOF
+```
 
-# Add the role so that the prometheus SA can read the POD/Services 
-cat << EOF | oc apply -n tetragon -f -
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: prometheus-k8s
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - services
-  - endpoints
-  - pods
-  verbs:
-  - get
-  - list
-  - watch
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: prometheus-k8s
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: prometheus-k8s
-subjects:
-- kind: ServiceAccount
-  name: prometheus-k8s
-  namespace: openshift-monitoring
-EOF
-
-cat << EOF | oc apply -n tetragon -f -
-apiVersion: cilium.io/v1alpha1
-kind: TracingPolicy
-metadata:
-  name: network-tracing
-spec:
-  parser:
-    dns:
-      enable: true
-    interface:
-      enable: true
-      packet: true
-    tcp:
-      enable: true
-      statsInterval: 20
-    udp:
-      cgroup: true
-      enable: true
-      statsInterval: 20
-    http:
-        enable: true
-        selectors:
-        - matchPorts:
-          - 8080
-          - 80 
-EOF
+4) The Grafana Operator uses the `GrafanaDashboard` CRD to add new dashboards. For simplicity we have collected a few dashboards [here](../../grafana/Operator/dashboards) you should be able to just apply them as they are. Start by applying `01-folders.yaml` first.
