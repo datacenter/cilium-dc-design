@@ -11,7 +11,7 @@ To effectively manage traffic between modernized, containerized workloads and le
 
 Within Kubernetes, Cilium excels at enforcing east-west network policies, controlling the communication between microservices and pods within the cluster. Leveraging eBPF technology, Cilium provides efficient and granular control over this internal traffic, allowing administrators to define policies that restrict which services can communicate with each other based on identity, labels, or other criteria. This east-west policy enforcement is crucial for securing Kubernetes environments, limiting the blast radius of potential security breaches, and ensuring compliance with regulatory requirements.
 
-The designs provided on this site strike a balance between robust security policies, service availability, the need for seamless and optimal communication across diverse application architectures.
+The designs provided on this site strike a balance between robust security policies, service availability, and the need for seamless and optimal communication across diverse application architectures.
 
 At a high level, the following traffic patterns are considered:
 
@@ -23,7 +23,7 @@ At a high level, the following traffic patterns are considered:
 
 ![High level design overview](./images/exec-summary.png)
 
-The illustration offers a simplified view of how policy can be applied to control north/south communication to- and from a Kubernetes cluster. In this example, the HR users are able to access the HR application - but are first redirected to a firewall for inspection. The users of the Finance app do not have to pass through the firewall, and can only access the Finance services. Pods in the Corporate Namespace are able to access other application within the Datacenter, whereas Pods in the Marketing namespace only have access to the internet via a Firewall.
+The illustration offers a simplified view of how policy can be applied to control north/south communication to and from a Kubernetes cluster. In this example, the HR users are able to access the HR application - but are first redirected to a firewall for inspection. The users of the Finance app do not have to pass through the firewall, and can only access the Finance services. Pods in the Corporate Namespace are able to access other application within the Datacenter, whereas Pods in the Marketing namespace only have access to the internet via a Firewall.
 
 To summarize, the combination of Cisco Application Centric Infrastructure (ACI) and Cilium offers a unified solution for managing hybrid environments, bridging legacy and cloud-native applications:
 
