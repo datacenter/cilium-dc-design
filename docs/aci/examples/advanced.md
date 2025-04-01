@@ -81,7 +81,7 @@ In this example the ESG configuration is optional and can be completely removed 
 
 ### Installation
 
-Cilium can be installed with the [Cilium OLM](https://github.com/isovalent/olm-for-cilium) Operator and its config can be tuned by modifying the `cluster-network-07-cilium-ciliumconfig.yaml` file as show below. You will need to customize this config to match your subnets, openshift domain name etc. This config is provided as an example.
+Cilium can be installed with the [Cilium OLM](https://docs.isovalent.com/operations-guide/installation/openshift.html) Operator and its config can be tuned by modifying the `cluster-network-07-cilium-ciliumconfig.yaml` file as show below. You will need to customize this config to match your subnets, openshift domain name etc. This config is provided as an example.
 
 ```yaml
 apiVersion: cilium.io/v1alpha1
