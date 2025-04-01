@@ -1,0 +1,4251 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tetragon-tcp-throughput-socket
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  tetragon-tcp-throughput-socket.json: |-
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": false,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 69,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 60,
+          "panels": [],
+          "title": "Overview",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "Bps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 1
+          },
+          "id": 66,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(rate(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Bytes Sent (avg over time)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "Bps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 9,
+            "x": 6,
+            "y": 1
+          },
+          "id": 95,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Bytes Sent",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "yellow",
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "yellow",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "Bps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 9,
+            "x": 15,
+            "y": 1
+          },
+          "id": 63,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(rate(tetragon_socket_stats_retransmitbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "interval": "",
+              "legendFormat": "__auto",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Retransmitted Bytes",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "pkt/s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 7
+          },
+          "id": 68,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(rate(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Segments Sent (avg over time)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "pkt/s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 9,
+            "x": 6,
+            "y": 7
+          },
+          "id": 96,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Segments Sent",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "yellow",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "pkt/s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 9,
+            "x": 15,
+            "y": 10
+          },
+          "id": 71,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(rate(tetragon_socket_stats_retransmitsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "interval": "",
+              "legendFormat": "__auto",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Retransmitted Segments",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 13
+          },
+          "id": 73,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(increase(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range])) / sum(increase(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Avg Sent Segment Size",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "yellow",
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 9,
+            "x": 6,
+            "y": 13
+          },
+          "id": 77,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(increase(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) / sum(increase(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "interval": "",
+              "legendFormat": "__auto",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Avg Sent Segment Size",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "light-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "Bps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 19
+          },
+          "id": 99,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(rate(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Bytes Received (avg over time)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "light-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "Bps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 9,
+            "x": 6,
+            "y": 19
+          },
+          "id": 97,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Bytes Received",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "yellow",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "pkt/s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 9,
+            "x": 15,
+            "y": 19
+          },
+          "id": 72,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(rate(tetragon_socket_stats_drops_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "interval": "",
+              "legendFormat": "__auto",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Socket Drops",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "light-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "pkt/s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 25
+          },
+          "id": 100,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(rate(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Segments Received (avg over time)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "light-purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "pkt/s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 9,
+            "x": 6,
+            "y": 25
+          },
+          "id": 98,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Segments Received",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "yellow"
+                  }
+                ]
+              },
+              "unit": "pkt/s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 9,
+            "x": 15,
+            "y": 28
+          },
+          "id": 70,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(rate(tetragon_socket_stats_zerowindow_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "interval": "",
+              "legendFormat": "__auto",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Zero Windows",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "light-purple"
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 31
+          },
+          "id": 74,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(increase(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range])) / sum(increase(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Avg Received Segment Size",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "yellow",
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "light-purple"
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 9,
+            "x": 6,
+            "y": 31
+          },
+          "id": 78,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(increase(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) / sum(increase(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval]))",
+              "interval": "",
+              "legendFormat": "__auto",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Avg Received Segment Size",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 37
+          },
+          "id": 22,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "Bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 0,
+                "y": 38
+              },
+              "id": 79,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (namespace, workload, binary) (rate(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Bytes Sent (top 5, avg over time)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "decimals": 0,
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "pkt/s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 12,
+                "y": 38
+              },
+              "id": 80,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (namespace, workload, binary) (rate(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Segments Sent (top 5, avg over time)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 56
+              },
+              "id": 83,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "unit": "decbytes"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, (sum by (namespace, workload, binary) (increase(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) / sum by (namespace, workload, binary) (increase(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval]))) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Avg Sent Segment Size (top 5)",
+              "type": "heatmap"
+            }
+          ],
+          "title": "TX by K8s Workload & Binary",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 38
+          },
+          "id": 92,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "Bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 0,
+                "y": 3
+              },
+              "id": 81,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (namespace, workload, binary) (rate(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Bytes Received (top 5, avg over time)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "decimals": 0,
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "pkt/s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 12,
+                "y": 3
+              },
+              "id": 82,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (namespace, workload, binary) (rate(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Segments Received (top 5, avg over time)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 21
+              },
+              "id": 84,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "unit": "decbytes"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, (sum by (namespace, workload, binary) (increase(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) / sum by (namespace, workload, binary) (increase(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval]))) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Avg Received Segment Size (top 5)",
+              "type": "heatmap"
+            }
+          ],
+          "title": "RX by K8s Workload & Binary",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 39
+          },
+          "id": 94,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 0,
+                "y": 40
+              },
+              "id": 85,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "unit": "decbytes"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (namespace, workload, binary) (increase(tetragon_socket_stats_retransmitbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Retransmitted Bytes per $__interval",
+              "type": "heatmap"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 12,
+                "y": 40
+              },
+              "id": 58,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "decimals": 0,
+                  "unit": "pkt"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (namespace, workload, binary) (increase(tetragon_socket_stats_retransmitsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Retransmitted Segments per $__interval",
+              "type": "heatmap"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 0,
+                "y": 51
+              },
+              "id": 54,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "decimals": 0,
+                  "unit": "pkt"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (namespace, workload, binary) (increase(tetragon_socket_stats_drops_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Socket Drops per $__interval",
+              "type": "heatmap"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 12,
+                "y": 51
+              },
+              "id": 56,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "decimals": 0,
+                  "unit": "pkt"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (namespace, workload, binary) (increase(tetragon_socket_stats_zerowindow_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{namespace}}/{{workload}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Zero Windows per $__interval",
+              "type": "heatmap"
+            }
+          ],
+          "title": "Retransmits and Drops by K8s Workload & Binary",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 40
+          },
+          "id": 128,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "Bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 0,
+                "y": 41
+              },
+              "id": 133,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (node, binary) (rate(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Bytes Sent (top 5, avg over time)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "decimals": 0,
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "pkt/s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 12,
+                "y": 41
+              },
+              "id": 134,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (node, binary) (rate(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Segments Sent (top 5, avg over time)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 59
+              },
+              "id": 135,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "unit": "decbytes"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, (sum by (node, binary) (increase(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) / sum by (node, binary) (increase(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval]))) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Avg Sent Segment Size (top 5)",
+              "type": "heatmap"
+            }
+          ],
+          "title": "TX by Node & Binary",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 41
+          },
+          "id": 130,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "Bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 0,
+                "y": 6
+              },
+              "id": 136,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (node, binary) (rate(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Bytes Received (top 5, avg over time)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "decimals": 0,
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "pkt/s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 12,
+                "y": 6
+              },
+              "id": 137,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (node, binary) (rate(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Segments Received (top 5, avg over time)",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 24
+              },
+              "id": 138,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "unit": "decbytes"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, (sum by (node, binary) (increase(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) / sum by (node, binary) (increase(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval]))) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Avg Received Segment Size (top 5)",
+              "type": "heatmap"
+            }
+          ],
+          "title": "RX by Node & Binary",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 42
+          },
+          "id": 132,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 0,
+                "y": 43
+              },
+              "id": 139,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "unit": "decbytes"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (node, binary) (increase(tetragon_socket_stats_retransmitbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Retransmitted Bytes per $__interval",
+              "type": "heatmap"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 12,
+                "y": 43
+              },
+              "id": 140,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "decimals": 0,
+                  "unit": "pkt"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (node, binary) (increase(tetragon_socket_stats_retransmitsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Retransmitted Segments per $__interval",
+              "type": "heatmap"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 0,
+                "y": 54
+              },
+              "id": 141,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "decimals": 0,
+                  "unit": "pkt"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (node, binary) (increase(tetragon_socket_stats_drops_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Socket Drops per $__interval",
+              "type": "heatmap"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 12,
+                "y": 54
+              },
+              "id": 142,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "decimals": 0,
+                  "unit": "pkt"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (node, binary) (increase(tetragon_socket_stats_zerowindow_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{node}} > {{binary}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Zero Windows per $__interval",
+              "type": "heatmap"
+            }
+          ],
+          "title": "Retransmits and Drops by Node & Binary",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 43
+          },
+          "id": 102,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "Bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 0,
+                "y": 8
+              },
+              "id": 104,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (dstdns) (rate(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Bytes Sent (top 5, avg over time)",
+              "transformations": [
+                {
+                  "id": "renameByRegex",
+                  "options": {
+                    "regex": "(Value)",
+                    "renamePattern": "<empty>"
+                  }
+                }
+              ],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "decimals": 0,
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "pkt/s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 12,
+                "y": 8
+              },
+              "id": 106,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (dstdns) (rate(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Segments Sent (top 5, avg over time)",
+              "transformations": [
+                {
+                  "id": "renameByRegex",
+                  "options": {
+                    "regex": "(Value)",
+                    "renamePattern": "<empty>"
+                  }
+                }
+              ],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 26
+              },
+              "id": 108,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "unit": "decbytes"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, (sum by (dstdns) (increase(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) / sum by (dstdns) (increase(tetragon_socket_stats_txsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval]))) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Avg Sent Segment Size (top 5)",
+              "transformations": [],
+              "type": "heatmap"
+            }
+          ],
+          "title": "TX by Remote DNS Name",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 44
+          },
+          "id": 110,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "Bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 0,
+                "y": 9
+              },
+              "id": 112,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (dstdns) (rate(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Bytes Received (top 5, avg over time)",
+              "transformations": [
+                {
+                  "id": "renameByRegex",
+                  "options": {
+                    "regex": "(Value)",
+                    "renamePattern": "<empty>"
+                  }
+                }
+              ],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-BlPu",
+                    "seriesBy": "max"
+                  },
+                  "decimals": 0,
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "pkt/s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 12,
+                "x": 12,
+                "y": 9
+              },
+              "id": 114,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "text": {
+                  "titleSize": 12
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (dstdns) (rate(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__rate_interval])) > 0)",
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Segments Received (top 5, avg over time)",
+              "transformations": [
+                {
+                  "id": "renameByRegex",
+                  "options": {
+                    "regex": "(Value)",
+                    "renamePattern": "<empty>"
+                  }
+                }
+              ],
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 27
+              },
+              "id": 116,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "unit": "decbytes"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, (sum by (dstdns) (increase(tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) / sum by (dstdns) (increase(tetragon_socket_stats_rxsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval]))) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Avg Received Segment Size (top 5)",
+              "transformations": [],
+              "type": "heatmap"
+            }
+          ],
+          "title": "RX by Remote DNS Name",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 45
+          },
+          "id": 118,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 0,
+                "y": 46
+              },
+              "id": 120,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "unit": "decbytes"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (dstdns) (increase(tetragon_socket_stats_retransmitbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Retransmitted Bytes per $__interval",
+              "transformations": [],
+              "type": "heatmap"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 12,
+                "y": 46
+              },
+              "id": 122,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "decimals": 0,
+                  "unit": "pkt"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (dstdns) (increase(tetragon_socket_stats_retransmitsegs_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Retransmitted Bytes per $__interval",
+              "transformations": [],
+              "type": "heatmap"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 0,
+                "y": 57
+              },
+              "id": 124,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "decimals": 0,
+                  "unit": "pkt"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (dstdns) (increase(tetragon_socket_stats_drops_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Socket Drops per $__interval",
+              "transformations": [],
+              "type": "heatmap"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "scaleDistribution": {
+                      "type": "linear"
+                    }
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 11,
+                "w": 12,
+                "x": 12,
+                "y": 57
+              },
+              "id": 126,
+              "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                  "decimals": 0,
+                  "unit": "pkt"
+                },
+                "color": {
+                  "exponent": 0.5,
+                  "fill": "dark-orange",
+                  "min": 0,
+                  "mode": "scheme",
+                  "reverse": false,
+                  "scale": "exponential",
+                  "scheme": "Cividis",
+                  "steps": 64
+                },
+                "exemplars": {
+                  "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                  "le": 1e-9
+                },
+                "legend": {
+                  "show": true
+                },
+                "rowsFrame": {
+                  "layout": "auto"
+                },
+                "tooltip": {
+                  "show": true,
+                  "yHistogram": false
+                },
+                "yAxis": {
+                  "axisPlacement": "left",
+                  "reverse": false
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(5, sum by (dstdns) (increase(tetragon_socket_stats_zerowindow_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\", dstdns=~\"$dstdns\"}[$__interval])) > 0)",
+                  "interval": "",
+                  "legendFormat": "{{dstdns}}",
+                  "queryType": "randomWalk",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Zero Windows per $__interval",
+              "transformations": [],
+              "type": "heatmap"
+            }
+          ],
+          "title": "Retransmits and Drops by Remote DNS Name",
+          "type": "row"
+        }
+      ],
+      "refresh": "1m",
+      "revision": 1,
+      "schemaVersion": 38,
+      "tags": [
+        "Tetragon"
+      ],
+      "templating": {
+        "list": [
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total, cluster)",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "cluster",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total, cluster)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\"}, namespace)",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "namespace",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\"}, namespace)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\"}, workload)",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "workload",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\"}, workload)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\"}, pod)",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "pod",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\"}, pod)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\"}, node)",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "node",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\"}, node)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\"}, binary)",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "binary",
+            "options": [],
+            "query": {
+              "query": "label_values(tetragon_events_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\"}, binary)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "query_result(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\"} or tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\"})",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "label": "remote DNS name",
+            "multi": true,
+            "name": "dstdns",
+            "options": [],
+            "query": {
+              "query": "query_result(tetragon_socket_stats_txbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\"} or tetragon_socket_stats_rxbytes_total{cluster=~\"$cluster\", namespace=~\"$namespace\", workload=~\"$workload\", pod=~\"$pod\", node=~\"$node\", binary=~\"$binary\"})",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "/dstdns=\"([^\"]+)\"/",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-30m",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Tetragon / TCP Throughput / Socket",
+      "uid": "etpts1nSk",
+      "version": 1,
+      "weekStart": ""
+    }
+

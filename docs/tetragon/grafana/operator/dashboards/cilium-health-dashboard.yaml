@@ -1,0 +1,4191 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cilium-health-dashboard
+spec:
+  resyncPeriod: 30s
+  folderRef: cilium
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  json: >
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "description": "High level overview dashboard for Cilium (https://cilium.io/). At a glance, should provide strong indicators of potential issues in the cluster.  Indicators here are designed to providen opinionated thresholds on problematic Cilium metrics.",
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "gnetId": 16611,
+      "graphTooltip": 1,
+      "id": 1440,
+      "links": [
+        {
+          "asDropdown": true,
+          "icon": "external link",
+          "includeVars": true,
+          "keepTime": true,
+          "tags": [
+            "cilium-overview"
+          ],
+          "targetBlank": false,
+          "title": "Cilium Overviews",
+          "tooltip": "",
+          "type": "dashboards",
+          "url": ""
+        },
+        {
+          "asDropdown": true,
+          "icon": "external link",
+          "includeVars": true,
+          "keepTime": true,
+          "tags": [
+            "cilium-agent"
+          ],
+          "targetBlank": false,
+          "title": "Cilium Components",
+          "tooltip": "",
+          "type": "dashboards",
+          "url": ""
+        }
+      ],
+      "liveNow": false,
+      "panels": [
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 106,
+          "panels": [],
+          "title": "💓 Cilium Health",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 128,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "# Cilium Health\n\n#### ℹ️ Provides high level health indicators on Cilium components, including Kubernetes level checks such as whether components are in a running state (i.e. not Pending/Crashing etc).\n\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.4.7",
+          "title": "Cilium Health",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Tracks the number of Cilium Agents that are not in the Running state.  This could indicate Pods that are crashing, cannot be scheduled (i.e. Pending), image pull issues etc.\n\nCilium Agents that are not running will disrupt Pod scheduling, may affect policy implementation and can lead to disruption in L7 proxy functionality.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.1
+                  }
+                ]
+              },
+              "unit": "Cilium Agents"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 7,
+            "x": 0,
+            "y": 5
+          },
+          "id": 135,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "count(kube_pod_status_phase{pod=~\"cilium-[0-9a-z]+\", phase!=\"Running\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"} == 1 or kube_pod_container_status_waiting_reason{pod=~\"cilium-[0-9a-z]+\", reason=~\"CrashLoopBackOff|ErrImagePull|ImagePullBackOff|Init:CrashLoopBackOff\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"} > 0) or vector(0)",
+              "hide": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Agent Pods Not Running",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "This is the total number of times Cilium components have restarted in the given time range.\n\nSee the following documentation for more information about different Cilium Enterprise components: \n\nhttps://docs.isovalent.com/operations-guide/architecture/index.html#cilium-components ",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.01
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 7,
+            "y": 5
+          },
+          "id": 149,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(kube_pod_container_status_restarts_total{pod=~\"cilium-[a-z0-9]+\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__range]))",
+              "legendFormat": "Cilium Agent Restarts",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(kube_pod_container_status_restarts_total{pod=~\"cilium-operator-.*\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\", cluster=~\"$cluster\"}[$__range]))",
+              "hide": false,
+              "legendFormat": "Cilium Operator Restarts",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(kube_pod_container_status_restarts_total{pod=~\"cilium-dnsproxy-.*\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__range]))",
+              "hide": false,
+              "legendFormat": "Cilium DNSProxy Restarts",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(kube_pod_container_status_restarts_total{pod=~\"cilium-envoy-.*\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__range]))",
+              "hide": false,
+              "legendFormat": "Cilium Envoy DaemonSet Restarts",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"$namespace\", pod=~\"cilium*\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__range]))",
+              "hide": false,
+              "legendFormat": "Other Cilium Workload Restarts",
+              "range": true,
+              "refId": "E"
+            }
+          ],
+          "title": "Cilium Pod Restarts Since",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Rate of errors and warnings emitted by Cilium Operator or Agents.\n\nErrors: Generally indicate significant problems in runtime operations of Cilium components.  Any increase should be investigated as it may indicate other issues.\n\nWarnings: Warnings may indicate unexpected runtime operations of Cilium or unexpected configuration states.   An unexpected sudden increase of warnings may indicate underlying issues and should be investigated. ",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 9,
+            "x": 15,
+            "y": 5
+          },
+          "id": 114,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "topk($k, sum(rate(cilium_errors_warnings_total{k8s_app=\"cilium\", pod=~\"$pod\", instance=~\"$instance\", job=~\"$job\", namespace=~\"$namespace\", cluster=~\"$cluster\"}[$__rate_interval])) by (pod, level))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Cilium Operator Error and Warning Rate",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "While running, Cilium performs various reconciliation tasks to achieve the desired configuration state.\n\nReconciliation tasks failing may indicate various issues with Ciliums ability to implemented the desired config state.\nErrors here could indicate potential degradation of functionality and should be investigated. \n\nDocumentation on how to check controller state: https://docs.cilium.io/en/stable/cmdref/cilium_status/",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "reconcile errors"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 24,
+            "x": 0,
+            "y": 14
+          },
+          "id": 165,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(cilium_controllers_runs_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\", status=\"failure\"}[$__rate_interval]))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Cilium Reconciliation Errors Since",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "For the runtime functionality of Cilium, Cilium agents run reconciliation tasks (known as \"controllers\").\n\nThese attempt to reconcile Cilium configuration with implemented runtime state (ex. implementing network policy configuration).\n\nThese tasks are crucial to the functionality of Cilium, errors here may indicate issues with configuration being out of sync with realized state.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 3,
+                "pointSize": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "reconcile errors"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 24,
+            "x": 0,
+            "y": 19
+          },
+          "id": 166,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(cilium_controllers_runs_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\", status=\"failure\"}[$__rate_interval])) by (pod, status)",
+              "instant": false,
+              "legendFormat": "{{pod}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Cilium Reconciliation Error Rate",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 24
+          },
+          "id": 159,
+          "panels": [],
+          "title": "🌐 Cilium Network Connectivity",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "If enabled (default=true), Cilium Agents attempt to performs connectivity health checks against all other nodes in the cluster.\n\nFailures here could indicate connectivity issues between Pod workloads between those nodes.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 70,
+                "lineWidth": 1
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "0": {
+                      "color": "green",
+                      "index": 0,
+                      "text": "OK"
+                    }
+                  },
+                  "type": "value"
+                },
+                {
+                  "options": {
+                    "from": 1,
+                    "result": {
+                      "color": "red",
+                      "index": 1,
+                      "text": "Fail"
+                    },
+                    "to": 999999999
+                  },
+                  "type": "range"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 24,
+            "x": 0,
+            "y": 25
+          },
+          "id": 169,
+          "options": {
+            "colWidth": 0.9,
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "rowHeight": 0.9,
+            "showValue": "auto",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "topk($k, count(cilium_node_connectivity_status{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"} != 1) by (pod))\n",
+              "hide": false,
+              "legendFormat": "Connectivity Status: {{pod}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Failing Cilium Node Health Checks",
+          "transformations": [],
+          "type": "status-history"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 37
+          },
+          "id": 121,
+          "panels": [],
+          "title": "📋 Cilium CNI (Pod Scheduling)",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 38
+          },
+          "id": 122,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "### Pod Scheduling\n\nThese metrics cover the Cilium-specific component of Pod Scheduling: CNI operations.\n\nThese values use the mean of the most recent requests. They will not change if there have been no recent requests.\n\nℹ️ **Errors or high latency could indicate issues with Pod scheduling and should be investigated.**\n\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.4.7",
+          "title": "CNI",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "CNI (Container Network Interface [1]) is a API specification for the creation and configuration of container (in the case of Kubernetes Pod containers) networking.\n\nCilium implements CNI for Kubernetes Pod scheduling.  The functioning of Ciliums CNI is a key component in the functionality of Cilium.  Errors here will likely indicate Pod scheduling issues.\n\n[1] https://github.com/containernetworking/cni",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "red",
+                    "value": 1.5
+                  }
+                ]
+              },
+              "unit": "err/s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 5,
+            "x": 0,
+            "y": 44
+          },
+          "id": 134,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(rate(cilium_api_limiter_processed_requests_total{pod=~\"$pod\", api_call=~\"endpoint.*\", outcome=\"fail\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) ",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "{{pod}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "CNI Error Rate",
+          "transparent": true,
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "CNI (Container Network Interface [1]) is a API specification for the creation and configuration of container (in the case of Kubernetes Pod containers) networking.\n\nCilium implements CNI for Kubernetes Pod scheduling.  The functioning of Ciliums CNI is a key component in the functionality of Cilium.  Errors here will likely indicate Pod scheduling issues.\n\n[1] https://github.com/containernetworking/cni",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "red",
+                    "value": 1.5
+                  }
+                ]
+              },
+              "unit": "dtdurations"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 10,
+            "x": 5,
+            "y": 44
+          },
+          "id": 126,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max(cilium_api_limiter_processing_duration_seconds{pod=~\"$pod\", api_call=~\"endpoint-create\", value=\"mean\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "{{pod}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Max CNI Add Latency",
+          "transparent": true,
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "CNI (Container Network Interface [1]) is a API specification for the creation and configuration of container (in the case of Kubernetes Pod containers) networking.\n\nCilium implements CNI for Kubernetes Pod scheduling.  The functioning of Ciliums CNI is a key component in the functionality of Cilium.  Errors here will likely indicate Pod scheduling issues.\n\n[1] https://github.com/containernetworking/cni",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "max": 0.8,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "red",
+                    "value": 1.5
+                  }
+                ]
+              },
+              "unit": "dtdurations"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 9,
+            "x": 15,
+            "y": 44
+          },
+          "id": 127,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "Max(cilium_api_limiter_processing_duration_seconds{pod=~\"$pod\", api_call=~\"endpoint-delete\", value=\"mean\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "{{pod}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Max CNI Delete Latency",
+          "transparent": true,
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "CNI (Container Network Interface [1]) is a API specification for the creation and configuration of container (in the case of Kubernetes Pod containers) networking.\n\nCilium implements CNI for Kubernetes Pod scheduling.  The functioning of Ciliums CNI is a key component in the functionality of Cilium.  Errors here will likely indicate Pod scheduling issues.\n\n[1] https://github.com/containernetworking/cni",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 1,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 3,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "red",
+                    "value": 1.5
+                  }
+                ]
+              },
+              "unit": "err/s"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "err/s"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 5,
+            "x": 0,
+            "y": 48
+          },
+          "id": 123,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.1.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(cilium_api_limiter_processed_requests_total{pod=~\"$pod\", api_call=~\"endpoint.*\", outcome=\"fail\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) ",
+              "interval": "",
+              "legendFormat": "err/s",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "CNI Error Rate",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "CNI (Container Network Interface [1]) is a API specification for the creation and configuration of container (in the case of Kubernetes Pod containers) networking.\n\nCilium implements CNI for Kubernetes Pod scheduling.  The functioning of Ciliums CNI is a key component in the functionality of Cilium.  Errors here will likely indicate Pod scheduling issues.\n\n[1] https://github.com/containernetworking/cni",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 0,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 2,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "decimals": 2,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 0.4
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 10,
+            "x": 5,
+            "y": 48
+          },
+          "id": 124,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.1.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max(cilium_api_limiter_processing_duration_seconds{pod=~\"$pod\", api_call=~\"endpoint-create\", value=\"mean\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "Max",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "avg(cilium_api_limiter_processing_duration_seconds{pod=~\"$pod\", api_call=~\"endpoint-create\", value=\"mean\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Avg",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "min(cilium_api_limiter_processing_duration_seconds{pod=~\"$pod\", api_call=~\"endpoint-create\", value=\"mean\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Min",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "CNI Add Latency",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "CNI (Container Network Interface [1]) is a API specification for the creation and configuration of container (in the case of Kubernetes Pod containers) networking.\n\nCilium implements CNI for Kubernetes Pod scheduling.  The functioning of Ciliums CNI is a key component in the functionality of Cilium.  Errors here will likely indicate Pod scheduling issues.\n\n[1] https://github.com/containernetworking/cni",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 0,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 2,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "decimals": 3,
+              "mappings": [],
+              "max": 2,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 0.4
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 9,
+            "x": 15,
+            "y": 48
+          },
+          "id": 125,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.1.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max(cilium_api_limiter_processing_duration_seconds{pod=~\"$pod\", api_call=~\"endpoint-delete\", value=\"mean\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "Max",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "avg(cilium_api_limiter_processing_duration_seconds{pod=~\"$pod\", api_call=~\"endpoint-delete\", value=\"mean\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Avg",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "min(cilium_api_limiter_processing_duration_seconds{pod=~\"$pod\", api_call=~\"endpoint-delete\", value=\"mean\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Min",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "CNI Delete Latency",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 57
+          },
+          "id": 131,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "# Pod IP States\n\nCilium moves Pod IPs (Cilium Endpoints) through a series of states during initialization and cleanup.\n\nHere, in the steady-state, you should expect to see 100% in the ready state. \n\nℹ️ **If you see a number of Endpoints \"stuck\" in a non-ready state, it may indicate problems with resource saturation that should be investigated.**\n\nCilium Endpoint Lifecycle: https://docs.cilium.io/en/stable/security/policy/lifecycle/#id2",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.4.7",
+          "title": "CNI",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "todo",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 3,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "ready": {
+                      "color": "green",
+                      "index": 0
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "ready"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "disconnecting"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 64
+          },
+          "id": 130,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "(sum by(endpoint_state) (cilium_endpoint_state{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}) / ignoring(endpoint_state) group_left sum(cilium_endpoint_state{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})) * 100\n",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "% of Pods in State",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 74
+          },
+          "id": 81,
+          "panels": [],
+          "title": "🏭 Kubernetes Event Processing",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 75
+          },
+          "id": 73,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "# Kubernetes **Events Processing**\n\nCilium consumes Kubernetes events about resources such as Network Policies, Pod networking, Nodes, and others to implement networking behavior.\n\nIn order for Cilium to function properly it must be able to communicate with Kubernetes APIServer and react to these events.\n\nThis section provides an indication of the health of Kubernetes event ingestion.\n\nℹ️ **Errors or high latency here could indicate resource constraints (CPU, Memory) on the Cilium Agent or the Kubernetes Control Plane**",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.4.7",
+          "title": "Kubernetes Events Processing",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Cilium consumes Kubernetes events for updates regarding various CRD resources.  Notably:\n\n* Network Policy Types: CiliumNetworkPolicies, CiliumClusterwideNetworkPolicies, NetworkPolicies.\n* Pods\n* Nodes\n* etc\n\nThe consuming and processing of these events is critical for Cilium Agents to be in sync with changes in Kubernetes cluster state or configuration (i.e. such as new Pods, policy changes etc).\n\nThus Kubernetes events are crucial to various aspects of Cilium including:\n\n* Connectivity\n* Network Policy\n* Pod Scheduling\n* Proxy Configuration\n\nUnexpected spikes or drops in event rate may indicate issues.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 3,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "red",
+                    "value": 1.5
+                  }
+                ]
+              },
+              "unit": "ops"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Pod, OK"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 5,
+            "x": 0,
+            "y": 82
+          },
+          "id": 74,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.1.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(cilium_kubernetes_events_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (status)",
+              "legendFormat": "{{status}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Kubernetes Event Rate",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Cilium consumes Kubernetes events for updates regarding various CRD resources.  Notably:\n\n* Network Policy Types: CiliumNetworkPolicies, CiliumClusterwideNetworkPolicies, NetworkPolicies.\n* Pods\n* Nodes\n* etc\n\nThe consuming and processing of these events is critical for Cilium Agents to be in sync with changes in Kubernetes cluster state or configuration (i.e. such as new Pods, policy changes etc).\n\nThus Kubernetes events are crucial to various aspects of Cilium including:\n\n* Connectivity\n* Network Policy\n* Pod Scheduling\n* Proxy Configuration\n\nUnexpected spikes or drops in event rate may indicate issues.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 3,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 10
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "P99"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "P50"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "blue",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 9,
+            "x": 5,
+            "y": 82
+          },
+          "id": 75,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.1.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum(rate(cilium_k8s_client_api_latency_time_seconds_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "P99",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum(rate(cilium_k8s_client_api_latency_time_seconds_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+              "legendFormat": "P95",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.50, sum(rate(cilium_k8s_client_api_latency_time_seconds_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+              "hide": false,
+              "legendFormat": "P50",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "Kubernetes Client API Latency",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Cilium consumes Kubernetes events for updates regarding various CRD resources.  Notably:\n\n* Network Policy Types: CiliumNetworkPolicies, CiliumClusterwideNetworkPolicies, NetworkPolicies.\n* Pods\n* Nodes\n* etc\n\nThe consuming and processing of these events is critical for Cilium Agents to be in sync with changes in Kubernetes cluster state or configuration (i.e. such as new Pods, policy changes etc).\n\nThus Kubernetes events are crucial to various aspects of Cilium including:\n\n* Connectivity\n* Network Policy\n* Pod Scheduling\n* Proxy Configuration\n\nUnexpected spikes or drops in event rate may indicate issues.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 3,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 10
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "P99"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "P95"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 10,
+            "x": 14,
+            "y": 82
+          },
+          "id": 76,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.1.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum(rate(cilium_k8s_client_rate_limiter_duration_seconds_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "P99",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum(rate(cilium_k8s_client_rate_limiter_duration_seconds_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+              "legendFormat": "P95",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.50, sum(rate(cilium_k8s_client_rate_limiter_duration_seconds_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+              "hide": false,
+              "legendFormat": "P50",
+              "range": true,
+              "refId": "E"
+            }
+          ],
+          "title": "Kubernetes Client API Rate Limiter Latency",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 93
+          },
+          "id": 18,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "gridPos": {
+                "h": 7,
+                "w": 24,
+                "x": 0,
+                "y": 28
+              },
+              "id": 104,
+              "options": {
+                "code": {
+                  "language": "plaintext",
+                  "showLineNumbers": false,
+                  "showMiniMap": false
+                },
+                "content": "# BPF Map Health\n\nCilium uses BPF maps as a datastore.\n\nℹ️ **These maps are fundamental to Cilium's operation. If they reach capacity then related functionality may fail.**\n\nBPF Maps and Map Capacity: https://docs.cilium.io/en/stable/network/ebpf/maps/#bpf-map-limitations.",
+                "mode": "markdown"
+              },
+              "pluginVersion": "9.4.7",
+              "title": "BPF Map Health",
+              "type": "text"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "This is a low level indicator that provides a rate of errors for insertions in local Endpoint Policy BPF Maps.\n\nEndpoint policy BPF maps act as a datastore for individual Cilium Endpoints running on the Cilium Agents node.\n\nThe Endpoint Policy BPF Maps are critical to the functioning of Cilium Endpoint connectivity. Errors here are considered unexpected and should be investigated.\n\nOne potential cause is high FQDN IP cache utilization. To check this, take a look at the L7 Dashboard for FQDN IP allocations as well as under the Agent Policy engine for Identities and Identity allocation rates.\nAn increase of error rates here, coupled with increases to those indicator strongly imply issues with FQDN proxies.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 3,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "area"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 0.01
+                      }
+                    ]
+                  },
+                  "unit": "errs/sec"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 9,
+                "w": 5,
+                "x": 0,
+                "y": 35
+              },
+              "id": 77,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "10.1.1",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(rate(cilium_bpf_map_ops_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\", outcome=\"fail\"}[$__rate_interval])) by (map_name)",
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Error Rate by Map",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "Provides current \"pressure\" on BPF maps which act as data stores for Cilium agents.  High pressure can indicate overutilization of BPF maps and may lead to degradation of functionality.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 3,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "area"
+                    }
+                  },
+                  "mappings": [],
+                  "noValue": "<10%",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 0.6
+                      },
+                      {
+                        "color": "red",
+                        "value": 0.9
+                      }
+                    ]
+                  },
+                  "unit": "percentunit"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 9,
+                "w": 19,
+                "x": 5,
+                "y": 35
+              },
+              "id": 44,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "10.1.1",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(cilium_bpf_map_pressure{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}) by (map_name)",
+                  "legendFormat": "Map: {{map_name}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Map Utilization",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "Provides current \"pressure\" on BPF maps which act as data stores for Cilium agents.  High pressure can indicate overutilization of BPF maps and may lead to degradation of functionality.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "decimals": 2,
+                  "mappings": [],
+                  "noValue": "<10%",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 0.6
+                      },
+                      {
+                        "color": "red",
+                        "value": 0.9
+                      }
+                    ]
+                  },
+                  "unit": "percentunit"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 24,
+                "x": 0,
+                "y": 44
+              },
+              "id": 129,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(cilium_bpf_map_pressure{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}) by (map_name)",
+                  "legendFormat": "Map: {{map_name}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Map Utilization",
+              "type": "stat"
+            }
+          ],
+          "title": "🗄️ BPF Maps",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 94
+          },
+          "id": 107,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 24,
+                "x": 0,
+                "y": 6
+              },
+              "id": 117,
+              "options": {
+                "code": {
+                  "language": "plaintext",
+                  "showLineNumbers": false,
+                  "showMiniMap": false
+                },
+                "content": "# Reconciliation Loops\n\nCilium implements reconciliation operations and other periodic operations using the concept of controllers.\n\nEach of these controllers is grouped under a name which relates to a subsystem, resource type, or operation.\n\nℹ️ **Error rates that appear here can help you to narrow down issues related to a failing Cilium component.**",
+                "mode": "markdown"
+              },
+              "pluginVersion": "9.4.7",
+              "title": "Reconciliation Status",
+              "type": "text"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "For the runtime functionality of Cilium, Cilium agents run reconciliation tasks (known as \"controllers\").\n\nThese attempt to reconcile Cilium configuration with implemented runtime state (ex. implementing network policy configuration).\n\nThese tasks are crucial to the functionality of Cilium, errors here may indicate issues with configuration being out of sync with realized state.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 2
+                      }
+                    ]
+                  },
+                  "unit": "ops"
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "failure"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "red",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "success"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "green",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 7,
+                "x": 0,
+                "y": 12
+              },
+              "id": 168,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(rate(cilium_controllers_runs_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (status)",
+                  "instant": false,
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Controller Run Outcome Rate",
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "For the runtime functionality of Cilium, Cilium agents run reconciliation tasks (known as \"controllers\").\n\nThese attempt to reconcile Cilium configuration with implemented runtime state (ex. implementing network policy configuration).\n\nThese tasks are crucial to the functionality of Cilium, errors here may indicate issues with configuration being out of sync with realized state.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "decimals": 2,
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 0.3
+                      },
+                      {
+                        "color": "red",
+                        "value": 1.5
+                      }
+                    ]
+                  },
+                  "unit": "err/s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 8,
+                "x": 7,
+                "y": 12
+              },
+              "id": 140,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(rate(cilium_controllers_group_runs_total{status=\"failure\", pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (group_name)",
+                  "instant": false,
+                  "legendFormat": "{{group_name}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Per Controller Error Rate",
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "For the runtime functionality of Cilium, Cilium agents run reconciliation tasks (known as \"controllers\").\n\nThese attempt to reconcile Cilium configuration with implemented runtime state (ex. implementing network policy configuration).\n\nThese tasks are crucial to the functionality of Cilium, errors here may indicate issues with configuration being out of sync with realized state.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 3,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 2
+                      }
+                    ]
+                  },
+                  "unit": "ops"
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "failure"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "red",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "success"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "green",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 7,
+                "x": 0,
+                "y": 18
+              },
+              "id": 115,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "10.1.1",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(rate(cilium_controllers_runs_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (status)",
+                  "instant": false,
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Controller Run Outcome Rate",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "For the runtime functionality of Cilium, Cilium agents run reconciliation tasks (known as \"controllers\").\n\nThese attempt to reconcile Cilium configuration with implemented runtime state (ex. implementing network policy configuration).\n\nThese tasks are crucial to the functionality of Cilium, errors here may indicate issues with configuration being out of sync with realized state.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "axisSoftMax": 1,
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 3,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "area"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 1e-10
+                      }
+                    ]
+                  },
+                  "unit": "err/s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 8,
+                "x": 7,
+                "y": 18
+              },
+              "id": 116,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "10.1.1",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "topk($k, sum(increase(cilium_controllers_group_runs_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (pod, group_name))",
+                  "instant": false,
+                  "legendFormat": "{{group_name}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Failed Reconciliation Tasks  ",
+              "type": "timeseries"
+            }
+          ],
+          "title": "🔁 Reconciliation",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 95
+          },
+          "id": 56,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "gridPos": {
+                "h": 3,
+                "w": 24,
+                "x": 0,
+                "y": 30
+              },
+              "id": 63,
+              "options": {
+                "code": {
+                  "language": "plaintext",
+                  "showLineNumbers": false,
+                  "showMiniMap": false
+                },
+                "content": "# Policy Engine",
+                "mode": "markdown"
+              },
+              "pluginVersion": "9.4.7",
+              "title": "L7 Proxy",
+              "type": "text"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "Policy implementation delay tracks how much time is spent waiting for policy configuration to be implemented into current Cilium network policy. Poor performance may indicate problems with Ciliums policy engine.",
+              "fieldConfig": {
+                "defaults": {
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 0.1
+                      },
+                      {
+                        "color": "red",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "unit": "s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 33
+              },
+              "id": 39,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(0.95, sum(rate(cilium_policy_implementation_delay_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+                  "hide": true,
+                  "legendFormat": "Processing Delay: P95",
+                  "range": true,
+                  "refId": "B"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(0.50, sum(rate(cilium_policy_implementation_delay_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+                  "hide": true,
+                  "legendFormat": "Processing Delay: P50",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Policy Implementation Latency",
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "Policy implementation delay tracks how much time is spent waiting for policy configuration to be implemented into current Cilium network policy. Poor performance may indicate problems with Ciliums policy engine.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 0.1
+                      },
+                      {
+                        "color": "red",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "unit": "s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 24,
+                "x": 0,
+                "y": 41
+              },
+              "id": 155,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(0.95, sum(rate(cilium_policy_implementation_delay_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+                  "hide": true,
+                  "legendFormat": "Processing Delay: P95",
+                  "range": true,
+                  "refId": "B"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(0.50, sum(rate(cilium_policy_implementation_delay_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+                  "hide": true,
+                  "legendFormat": "Processing Delay: P50",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Policy Implementation Latency",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 24,
+                "x": 0,
+                "y": 46
+              },
+              "id": 167,
+              "options": {
+                "code": {
+                  "language": "plaintext",
+                  "showLineNumbers": false,
+                  "showMiniMap": false
+                },
+                "content": "# Policy: **L7 Proxy**\n\nThis section covers processing of requests done on behalf of L7 proxies in Cilium:\n\n* Cilium Agent DNS Proxy (default)\n* External HA DNS Proxy (requires additional configuration)\n* Cilium L7 Envoy Proxy",
+                "mode": "markdown"
+              },
+              "pluginVersion": "9.4.7",
+              "title": "L7 Proxy",
+              "type": "text"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "This tracks errors that Cilium L7 proxies (i.e. DNSProxy and Envoy L7) encounter while processing request responses.",
+              "fieldConfig": {
+                "defaults": {
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 0.0001
+                      },
+                      {
+                        "color": "red",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "unit": "errors/sec"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 8,
+                "x": 0,
+                "y": 52
+              },
+              "id": 72,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(rate(cilium_policy_l7_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\", rule=\"parse_errors\"}[$__rate_interval])) by (proxy_type)",
+                  "legendFormat": "{{proxy_type}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "L7 Proxy Request Errors",
+              "transparent": true,
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "Rates for processing L7 requests.\n\nIncreases or persistent rates of errors here likely indicate problems with Cilium, but may also indicate issues with application requests or upstream services such as DNS.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "blue"
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 8,
+                "x": 8,
+                "y": 52
+              },
+              "id": 60,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(rate(cilium_policy_l7_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (proxy_type)",
+                  "legendFormat": "{{label_name}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "L7 Request Processing Rate",
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "Provides time waiting for proxies DNS requests via Ciliums DNS Proxy to complete. Issues here may indicate problems with upstream DNS servers or configuration.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "fixedColor": "super-light-blue",
+                    "mode": "palette-classic"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 1
+                      },
+                      {
+                        "color": "red",
+                        "value": 10
+                      }
+                    ]
+                  },
+                  "unit": "s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 8,
+                "x": 16,
+                "y": 52
+              },
+              "id": 50,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(0.95, sum(rate(cilium_proxy_upstream_reply_seconds_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+                  "legendFormat": "Alloc/Sec",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "DNS Proxy Upstream Reply Seconds Duration",
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "This tracks errors that Cilium L7 proxies (i.e. DNSProxy and Envoy L7) encounter while processing request responses.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "fixedColor": "red",
+                    "mode": "fixed"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 3,
+                    "pointSize": 1,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "unit": "errors/sec"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 0,
+                "y": 57
+              },
+              "id": 141,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(rate(cilium_policy_l7_total{pod=~\"$pod\", rule=\"parse_errors\", pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (proxy_type)",
+                  "legendFormat": "Errors: {{proxy_type}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "L7 Proxy Request Errors",
+              "transparent": true,
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "Rates for processing L7 requests.\n\nIncreases or persistent rates of errors here likely indicate problems with Cilium, but may also indicate issues with application requests or upstream services such as DNS.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "fixedColor": "super-light-blue",
+                    "mode": "fixed"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 3,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "blue"
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 8,
+                "y": 57
+              },
+              "id": 142,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(rate(cilium_policy_l7_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (proxy_type)",
+                  "legendFormat": "rate",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "L7 Request Processing Rate",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "Rates for processing L7 requests.\n\nIncreases or persistent rates of errors here likely indicate problems with Cilium, but may also indicate issues with application requests or upstream services such as DNS.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "fixedColor": "super-light-blue",
+                    "mode": "fixed"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 3,
+                    "pointSize": 1,
+                    "scaleDistribution": {
+                      "log": 2,
+                      "type": "log"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "line+area"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 1
+                      },
+                      {
+                        "color": "red",
+                        "value": 10
+                      }
+                    ]
+                  },
+                  "unit": "s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 16,
+                "y": 57
+              },
+              "id": 143,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "9.4.7",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(0.95, sum(rate(cilium_proxy_upstream_reply_seconds_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+                  "legendFormat": "P95 Latency",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(0.50, sum(rate(cilium_proxy_upstream_reply_seconds_bucket{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+                  "hide": false,
+                  "legendFormat": "P50 Latency",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "DNS Proxy Upstream Reply Seconds Duration",
+              "type": "timeseries"
+            }
+          ],
+          "title": "⚖️ Policy Enforcement",
+          "type": "row"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 96
+          },
+          "id": 154,
+          "panels": [],
+          "title": "💻 Cilium System CPU/Memory Utilization",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "This metric provides the 90th and 50th (i.e. median) percentile of Cilium agent run-time scheduling.\n\nThis is related to CPU availability and utilization, high values or increases here denote in either throttling or lack of compute resources.\n\nHigh sustained runtime will likely indicate problems with Cilium functionality.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 100
+                  },
+                  {
+                    "color": "red",
+                    "value": 500
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 97
+          },
+          "id": 150,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum(rate(go_sched_latencies_seconds_bucket{pod=~\"cilium-[a-z0-9]+\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+              "legendFormat": "P95",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.50, sum(rate(go_sched_latencies_seconds_bucket{pod=~\"cilium-[a-z0-9]+\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (le))",
+              "hide": false,
+              "legendFormat": "P50",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Cilium Agent CPU Runtime Latency",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Total memory utilization of Cilium Agent Pods",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 512000000
+                  },
+                  {
+                    "color": "red",
+                    "value": 1024000000
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 11,
+            "x": 0,
+            "y": 105
+          },
+          "id": 161,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "topk($k, sum(container_memory_rss{pod=~\"$pod\", pod=~\"cilium.*\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}) by (pod))",
+              "hide": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Cilium Agent Container Memory Utilization",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Provides top-k Cilium Agent CPU utilization metrics.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 256000000
+                  },
+                  {
+                    "color": "red",
+                    "value": 512000000
+                  }
+                ]
+              },
+              "unit": "seconds/second"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 13,
+            "x": 11,
+            "y": 105
+          },
+          "id": 162,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "topk($k, sum(rate(container_cpu_usage_seconds_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (pod))",
+              "hide": false,
+              "legendFormat": "{{pod}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Cilium Agent Container CPU Utilization",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Total memory utilization of Cilium Agent Pods",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 512000000
+                  },
+                  {
+                    "color": "red",
+                    "value": 1024000000
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 11,
+            "x": 0,
+            "y": 113
+          },
+          "id": 163,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "topk($k, sum(container_memory_rss{pod=~\"$pod\", pod=~\"cilium.*\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}) by (pod))",
+              "hide": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Cilium Agent Container Memory Utilization",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Provides top-k Cilium Agent CPU utilization metrics.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 3,
+                "pointSize": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 256000000
+                  },
+                  {
+                    "color": "red",
+                    "value": 512000000
+                  }
+                ]
+              },
+              "unit": "seconds/second"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 13,
+            "x": 11,
+            "y": 113
+          },
+          "id": 164,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "topk($k, sum(rate(container_cpu_usage_seconds_total{pod=~\"$pod\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"}[$__rate_interval])) by (pod))",
+              "hide": false,
+              "legendFormat": "{{pod}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Cilium Agent Container CPU Utilization",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "This shows how close Cilium workload Pods are to their set memory limits (if set).  By default Cilium installs without explicit memory limits - in which case nothing should be shown here.\n\nHowever if Cilium has a memory limit set this will show how much of their limit Cilium Pods are using.\n\nPods that hit their limit will be killed for running out of memory by the Linux host OS and can cause disruptions in functionality.\n\nConsistently high values here should indicate that you may want to increase limits.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 0.8
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.9
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 121
+          },
+          "id": 137,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.4.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "(sum by (pod, container)(container_memory_rss{pod=~\"$pod\", pod=~\"cilium-[a-z0-9]\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\"})) / (sum by (pod, container) (kube_pod_container_resource_limits{pod=~\"$pod\", pod=~\"cilium-[a-z0-9]\", namespace=~\"$namespace\", job=~\"$job\", cluster=~\"$cluster\", instance=~\"$instance\", resource=\"memory\"}))",
+              "hide": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Cilium Agent Container Memory Limit Utilization",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "",
+      "revision": 1,
+      "schemaVersion": 38,
+      "style": "dark",
+      "tags": [
+        "cilium-overview"
+      ],
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "selected": false,
+              "text": "default",
+              "value": "default"
+            },
+            "hide": 0,
+            "includeAll": false,
+            "label": "Prometheus data source",
+            "multi": false,
+            "name": "datasource",
+            "options": [],
+            "query": "prometheus",
+            "queryValue": "",
+            "refresh": 1,
+            "regex": "(?!grafanacloud-usage|grafanacloud-ml-metrics).+",
+            "skipUrlSync": false,
+            "type": "datasource"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(cilium_version, cluster)",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "cluster",
+            "options": [],
+            "query": {
+              "query": "label_values(cilium_version, cluster)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 0,
+            "type": "query"
+          },
+          {
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(cilium_version{cluster=~\"$cluster\"}, namespace)",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "namespace",
+            "options": [],
+            "query": {
+              "query": "label_values(cilium_version{cluster=~\"$cluster\"}, namespace)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 0,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": false,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(cilium_version{cluster=~\"$cluster\", namespace=~\"$namespace\"}, pod)",
+            "hide": 0,
+            "includeAll": true,
+            "multi": false,
+            "name": "pod",
+            "options": [],
+            "query": {
+              "query": "label_values(cilium_version{cluster=~\"$cluster\", namespace=~\"$namespace\"}, pod)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "tagValuesQuery": "",
+            "tagsQuery": "",
+            "type": "query",
+            "useTags": false
+          },
+          {
+            "current": {
+              "selected": false,
+              "text": "3",
+              "value": "3"
+            },
+            "hide": 0,
+            "label": "top k",
+            "name": "k",
+            "options": [
+              {
+                "selected": true,
+                "text": "3",
+                "value": "3"
+              }
+            ],
+            "query": "3",
+            "skipUrlSync": false,
+            "type": "textbox"
+          },
+          {
+            "allValue": ".+",
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(instance)",
+            "description": "Prometheus-generated instance label",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Instance",
+            "multi": true,
+            "name": "instance",
+            "options": [],
+            "query": {
+              "query": "label_values(instance)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 0,
+            "type": "query"
+          },
+          {
+            "allValue": ".+",
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(job)",
+            "description": "Prometheus-generated job label",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Job",
+            "multi": true,
+            "name": "job",
+            "options": [],
+            "query": {
+              "query": "label_values(job)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 0,
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-15m",
+        "to": "now"
+      },
+      "timepicker": {
+        "refresh_intervals": [
+          "10s",
+          "30s",
+          "1m",
+          "5m",
+          "15m",
+          "30m",
+          "1h",
+          "2h",
+          "1d"
+        ],
+        "time_options": [
+          "5m",
+          "15m",
+          "1h",
+          "6h",
+          "12h",
+          "24h",
+          "2d",
+          "7d",
+          "30d"
+        ]
+      },
+      "timezone": "",
+      "title": "Cilium / High Level Health",
+      "uid": "cilium_high_level_health",
+      "version": 1,
+      "weekStart": ""
+    }

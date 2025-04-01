@@ -1,0 +1,17 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: tetragon
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: cilium
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
