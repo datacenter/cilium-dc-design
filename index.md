@@ -57,7 +57,7 @@ Key features of Isovalent Networking for Kubernetes include:
 * **Scalability and Performance**: By using eBPF, Isovalent Networking for Kubernetes achieves high performance and scalability, as it can run network policies directly in the Linux kernel without the need for complex user-space processing.
 * **Service Mesh Integration**: Isovalent Networking for Kubernetes can be integrated with service mesh architectures to provide transparent, high-performance networking and security features that complement service mesh capabilities.
 * **Observability**: Isovalent Networking for Kubernetes offers robust observability tools, allowing users to monitor and troubleshoot network traffic and security policies with detailed metrics and visibility into application communication patterns.
-* **Kubernetes Native**: Designed with Kubernetes in mind, Isovalent Networking for Kubernetes seamlessly integrates with Kubernetes to provide native support for network policies and service discove* 
+* **Kubernetes Native**: Designed with Kubernetes in mind, Isovalent Networking for Kubernetes seamlessly integrates with Kubernetes to provide native support for network policies and service discovery
 
 Isovalent Networking for Kubernetes is widely adopted in cloud-native environments for its ability to enhance security and network performance while providing comprehensive observability and integration with existing Kubernetes infrastructure.
 
