@@ -12,7 +12,7 @@ This design document is currently under review and is subject to change. The inf
 {: .no_toc }
 
 
-Welcome to the Best Practices for the Modern Datacenter Documentation Site covering Kubernetes deployments with Cisco ACI and Isovalent Networking for Kubernetes! This resource is designed to provide guidance and insights into the Networking best practices for deploying Kubernetes Clusters using sovalent Networking for Kubernetes (based on Cilium) as CNI. While we strive to cover a wide range of scenarios and design considerations, please note that not all options are covered. Alternative designs exist, and we encourage users to conduct their own research and tailor their designs to meet specific needs and requirements.
+Welcome to the Best Practices for the Modern Datacenter Documentation Site covering Kubernetes deployments with Cisco ACI and Isovalent Networking for Kubernetes! This resource is designed to provide guidance and insights into the Networking best practices for deploying Kubernetes Clusters using Isovalent Networking for Kubernetes (based on Cilium) as CNI. While we strive to cover a wide range of scenarios and design considerations, please note that not all options are covered. Alternative designs exist, and we encourage users to conduct their own research and tailor their designs to meet specific needs and requirements.
 
 These Best Practices for the Modern Datacenter Documentation Site serves as a comprehensive guide to help you navigate through various concepts and options to strike a balance between features and complexity when deploying Kubernetes Clusters in the Datacenter. Our goal is to equip you with the knowledge and tools needed to implement effective and efficient solutions.
 
