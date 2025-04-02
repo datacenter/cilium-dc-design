@@ -12,9 +12,9 @@ This design document is currently under review and is subject to change. The inf
 {: .no_toc }
 
 
-Welcome to the Isovalent Best Practices for the Modern Datacenter Documentation Site! This resource is designed to provide guidance and insights into the Networking best practices for deploying Kubernetes Clusters using Cilium as CNI. While we strive to cover a wide range of scenarios and design considerations, please note that not all options are covered. Alternative designs exist, and we encourage users to conduct their own research and tailor their designs to meet specific needs and requirements.
+Welcome to the Best Practices for the Modern Datacenter Documentation Site covering Kubernetes deployments with Cisco ACI and Isovalent Networking for Kubernetes! This resource is designed to provide guidance and insights into the Networking best practices for deploying Kubernetes Clusters using sovalent Networking for Kubernetes (based on Cilium) as CNI. While we strive to cover a wide range of scenarios and design considerations, please note that not all options are covered. Alternative designs exist, and we encourage users to conduct their own research and tailor their designs to meet specific needs and requirements.
 
-The Isovalent Best Practices for the Modern Datacenter Documentation Site serves as a comprehensive guide to help you navigate through various concepts and options to strike a balance between features and complexity when deploying Kubernetes Clusters in the Datacenter. Our goal is to equip you with the knowledge and tools needed to implement effective and efficient solutions.
+These Best Practices for the Modern Datacenter Documentation Site serves as a comprehensive guide to help you navigate through various concepts and options to strike a balance between features and complexity when deploying Kubernetes Clusters in the Datacenter. Our goal is to equip you with the knowledge and tools needed to implement effective and efficient solutions.
 
 We welcome contributions from the community! If you have insights or improvements you'd like to share, please feel free to submit a pull request or open an issue on our GitHub repository.
 
@@ -48,49 +48,33 @@ At present, these designs does not necessitate the use of supplementary componen
 
 This white paper will thoroughly examine the technical underpinnings, implementation considerations, and operational benefits of this approach. It will guide readers through the process of implementing this hybrid model, ensuring that network reliability, performance, and security are not only preserved but significantly enhanced.
 
-## Cilium
+## Isovalent Networking for Kubernetes (Cilium)
 
-Cilium is an open-source software project that provides networking, security, and observability capabilities for containerized applications, particularly in Kubernetes environments. It leverages eBPF (extended Berkeley Packet Filter), a powerful Linux kernel technology, to efficiently manage network policies, service connectivity, and security at the application layer.
+Isovalent Networking for Kubernetes provides networking, security, and observability capabilities for containerized applications, particularly in Kubernetes environments. It leverages eBPF (extended Berkeley Packet Filter), a powerful Linux kernel technology, to efficiently manage network policies, service connectivity, and security at the application layer. It is the enterprise offering of the Cilium open source project, which was created by Isovalent. 
 
-Key features of Cilium include:
-* **Advanced Network Security**: Cilium enables fine-grained security policies that can be defined based on application-layer identities rather than just IP addresses. This allows for more precise control over communication between microservices.
-* **Scalability and Performance**: By using eBPF, Cilium achieves high performance and scalability, as it can run network policies directly in the Linux kernel without the need for complex user-space processing.
-* **Service Mesh Integration**: Cilium can be integrated with service mesh architectures to provide transparent, high-performance networking and security features that complement service mesh capabilities.
-* **Observability**: Cilium offers robust observability tools, allowing users to monitor and troubleshoot network traffic and security policies with detailed metrics and visibility into application communication patterns.
-* **Kubernetes Native**: Designed with Kubernetes in mind, Cilium seamlessly integrates with Kubernetes to provide native support for network policies and service discove* 
-Cilium is widely adopted in cloud-native environments for its ability to enhance security and network performance while providing comprehensive observability and integration with existing Kubernetes infrastructure.
+Key features of Isovalent Networking for Kubernetes include:
+* **Advanced Network Security**: Isovalent Networking for Kubernetes enables fine-grained security policies that can be defined based on application-layer identities rather than just IP addresses. This allows for more precise control over communication between microservices.
+* **Scalability and Performance**: By using eBPF, Isovalent Networking for Kubernetes achieves high performance and scalability, as it can run network policies directly in the Linux kernel without the need for complex user-space processing.
+* **Service Mesh Integration**: Isovalent Networking for Kubernetes can be integrated with service mesh architectures to provide transparent, high-performance networking and security features that complement service mesh capabilities.
+* **Observability**: Isovalent Networking for Kubernetes offers robust observability tools, allowing users to monitor and troubleshoot network traffic and security policies with detailed metrics and visibility into application communication patterns.
+* **Kubernetes Native**: Designed with Kubernetes in mind, Isovalent Networking for Kubernetes seamlessly integrates with Kubernetes to provide native support for network policies and service discove* 
+
+Isovalent Networking for Kubernetes is widely adopted in cloud-native environments for its ability to enhance security and network performance while providing comprehensive observability and integration with existing Kubernetes infrastructure.
 
 ## Isovalent 
 
 As the creator of eBPF, Cilium, and Tetragon, Isovalent has become a cornerstone of innovation in cloud-native ecosystems. All major cloud providers have adopted Isovalent’s technologies, making it the de-facto standard for cloud-native networking and security.  
 
-The Isovalent Enterprise Platform delivers advanced Networking, Security, and Observability solutions for Kubernetes and cloud-native environments.  
+The Isovalent Enterprise Platform delivers advanced Networking, Security, and Observability solutions for Kubernetes and cloud-native environments. This is combined with a [global customer support offering](https://isovalent.com/blog/post/isovalent-enterprise-cilium-support-customer-environments/). 
 
 Isovalent joined Cisco via acquisition in April 2024. 
 
 The Isovalent Platform is trusted by enterprises such as Goldman Sachs, J.P. Morgan Chase, UBS, and S&P Global, as well as technology leaders like Databricks, Adobe, and Confluent, and some of the leading AI Large Language Model (LLM) providers. 
 
-## Cilium vs Cilium Enterprise
-
-Cilium and Cilium Enterprise both provide advanced networking, security, and observability solutions for cloud-native environments, particularly those using Kubernetes. However, there are key differences between the two, primarily in terms of features, support, and target audience.
-
-### Cilium:
-
-* Open Source: Cilium is an open-source project available to anyone. It is maintained by a community of contributors, with Isovalent as the primary maintainer.
-* Core Features: It provides essential functionalities such as network security policies, load balancing, and observability using eBPF (extended Berkeley Packet Filter) technology.
-* Community Support: Users rely on community forums, GitHub issues, and public documentation for support.
-* Flexibility and Innovation: As an open-source project, Cilium benefits from continuous innovation and contributions from a broad community of developers and users.
-
-### Cilium Enterprise:
-
-* Commercial Offering: Cilium Enterprise is the commercial version offered by Isovalent, built on top of the open-source Cilium project.
-* Enhanced Features: It includes additional enterprise-grade features and capabilities that are not available in the open-source version. These may include advanced security features, compliance tools, extended observability, and integrations with other enterprise systems.
-* Professional Support: Customers receive professional support, including SLAs, access to a dedicated support team, and potentially custom engineering services.
-* Enterprise Integration: Designed to integrate seamlessly into large-scale enterprise environments, offering improved reliability, scalability, and ease of management.
 
 {: .note }
-Disclaimer: This document has been developed exclusively with **Cilium Enterprise** version in mind. No support or guidance can be provided for Cilium open-source version. 
-Cisco TAC does not provide support for Cilium and Cilium Enterprise support can be purchased separately 
+Disclaimer: This document has been developed exclusively with **Isovalent Networking for Kubernetes** version in mind. No support or guidance is provided for Cilium open-source version. 
+Cisco TAC does not provide support for Cilium and Isovalent Networking for Kubernetes support can be purchased separately 
 
 ## How to Request Design Assistance
 
@@ -99,7 +83,7 @@ We understand that every network environment is unique, and we're here to help t
 ### Contact Information
 
 * [Contact Isovalent](mailto:isovalentsales@cisco.com)
-* Contact your Cisco account manager
+* Contact your Cisco account manager ([Global Contact Page](https://www.cisco.com/site/us/en/about/contact-cisco/index.html))
 * [Request a demo](https://isovalent.com/request-demo/)
 
 Our team is committed to providing personalized support and guidance to ensure your network design aligns with your operational requirements and future growth plans. We look forward to working with you to achieve your goals!
