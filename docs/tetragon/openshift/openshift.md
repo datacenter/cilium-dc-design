@@ -30,12 +30,12 @@ metadata:
   namespace: tetragon
 spec:
   sourceType: grpc
-  image: quay.io/isovalent/tetragon-operator-index:v0.0.1
+  image: <image>
 EOF
 ```
 
-{: .warning }
-At the time of writing the most recent version of the tetragon-operator-index is `v0.0.1` but you should verify that is still the case by checking the official [Tetragon Installation Guide](https://docs.isovalent.com/operations-guide/tetragon/installation/openshift.html)
+{: .Note }
+You can find the Tetragon `CatalogSource` image tag at [Tetragon Installation Guide](https://docs.isovalent.com/operations-guide/tetragon/installation/openshift.html)
 
 3) After a minute or so you should see the `Teragon Operator` in the `OperatorHub` page of OpenShift. Simply click on Install the configuration will be done afterwards.
 

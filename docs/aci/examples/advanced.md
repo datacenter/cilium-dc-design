@@ -77,7 +77,7 @@ In this example the ESG configuration is optional and can be completely removed 
   If BFD is configured for sub-second failure detection and you are running virtual machines, a live migration may cause BFD to perceive the node as down. Consequently, the BGP session will be reset, leading to the withdrawal of all routes advertised by the affected node from the routing table.
 
 
-## Cilium Enterprise
+## Isovalent Networking for Kubernetes
 
 ### Installation
 
@@ -121,7 +121,6 @@ spec:
     cni:
       binPath: "/var/lib/cni/bin"
       confPath: "/var/run/multus/cni/net.d"
-      exclusive: false
     hubble:
       enabled: true
       metrics:

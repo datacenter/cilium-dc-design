@@ -127,7 +127,7 @@ network:
 
 We continue to use DHCP on the primary node interfaces and manually add additional addresses for egress functionality. If ACI is set up with a secondary subnet that includes the `/32` addresses, no extra configuration is needed, even if the Egress Subnet is outside the Node Subnet.
 
-## Cilium Enterprise
+## Isovalent Networking for Kubernetes
 
 ### Installation
 
@@ -153,8 +153,6 @@ ipam:
     - 10.56.0.0/16
     clusterPoolIPv4PodCIDRMaskSize: 24
 
-cni:
-  exclusive: false # Set to false to allow Multus to work. This is useful for KubeVirt
 bpf:
   masquerade: true
 nodePort:

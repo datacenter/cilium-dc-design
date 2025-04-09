@@ -54,7 +54,7 @@ Centralized Routing
 {: .note }
 This design requires ACI 6.1(2) or above as the Propagate Next Hop and Ignore IGP Metric features are both needed.
 
-## Cilium Egress design
+## Isovalent Networking for Kubernetes Egress design
 
 When it comes to the Cilium Egress design there are a two options we can evaluate based on our requirements. 
 

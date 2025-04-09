@@ -68,7 +68,7 @@ By default, ACI installs up to 16 eBGP/iBGP ECMP paths. If more than 16 `nodes` 
 
 Both ACI and Cilium will be configured to use BGP Graceful Restart. When a BGP speaker restarts its BGP process or when the BGP process crashes, neighbors will not discard the received paths from the speaker, ensuring that connectivity is not impacted as long as the data plane is still correctly programmed.
 
-### BFD With Cilium Enterprise 
+### BFD With Isovalent Networking for Kubernetes 
 
 Bidirectional Forwarding Detection (BFD) is a network protocol used to detect faults in the path between two forwarding engines, such as routers, and is commonly used in conjunction with routing protocols like BGP (Border Gateway Protocol). BFD enhances BGP operations by providing quick and reliable detection of link failures, enabling faster failover and improved network resilience. Thanks to this capability we can achieve sub second failure detection for our BGP Peering.
 

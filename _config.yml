@@ -1,5 +1,5 @@
-title: Cilium and Cisco DC Fabrics
-description: Best practice designs for Cilium Enterprise and Cisco DataCenter Fabrics
+title: Isovalent and Cisco DC Fabrics
+description: Best practice designs for Isovalent Networking for Kubernetes and Cisco DataCenter Fabrics
 theme: just-the-docs
 url: https://datacenter.github.io/cilium-dc-design/
 aux_links:

@@ -22,9 +22,9 @@ This configuration aligns with Cilium's ethos of providing high-performance, sca
 {: .warning}
 This design is intended to address 90% of common use cases. However, if your cluster scales beyond 1,000 nodes, adjustments to the design may be necessary. In such cases, we strongly encourage you to contact Isovalent for additional guidance and support.
 
-### Cilium BGP Control Plane
+### Isovalent Networking for Kubernetes BGP Control Plane
 
-Cilium BGP Control Plane [Enterprise](https://docs.isovalent.com/configuration-guide/networking/bgpv2/index.html) or [OSS](https://docs.cilium.io/en/stable/network/bgp-control-plane/bgp-control-plane/) provides a way for Cilium to advertise routes to connected routers by using the Border Gateway Protocol (BGP). Cilium BGP Control Plane makes pod networks and/or load-balancer services of type LoadBalancer reachable from outside the cluster for environments that support BGP. In Cilium, the BGP Control Plane does not program the Linux host data path, so it cannot be used to establish IP reachability within the cluster or to external IPs.
+Cilium BGP Control Plane [Enterprise](https://docs.isovalent.com/configuration-guide/networking/bgpv2/index.html) provides a way for Cilium to advertise routes to connected routers by using the Border Gateway Protocol (BGP). Cilium BGP Control Plane makes pod networks and/or load-balancer services of type LoadBalancer reachable from outside the cluster for environments that support BGP. In Cilium, the BGP Control Plane does not program the Linux host data path, so it cannot be used to establish IP reachability within the cluster or to external IPs.
 
 ### Cilium Egress Gateway
 
@@ -33,7 +33,7 @@ The [Egress Gateway](https://docs.cilium.io/en/stable/network/egress-gateway/egr
 When the egress gateway feature is enabled and egress gateway policies are in place, packets leaving the cluster are masqueraded with selected, predictable IPs (`egressIP`) associated with the gateway nodes. This allows for network administrators to apply network controls to pods and or namesapces establishing outbound connectivity.
 
 {: .warning}
-Only Cilium Enterprise supports [Egress Gateway High Availability](https://docs.isovalent.com/configuration-guide/networking/egress-gateway/index.html)
+Only Isovalent Networking for Kubernetes supports [Egress Gateway High Availability](https://docs.isovalent.com/configuration-guide/networking/egress-gateway/index.html)
 
 ### XDP Acceleration
 

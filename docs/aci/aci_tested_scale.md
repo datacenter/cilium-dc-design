@@ -66,7 +66,7 @@ This test is conducted by gracefully reloading a node.
 Minimal. Traffic can be dropped during Routing Table Re Convergence. I.E. if traffic sent to the node that is reloading before is removed as a valid Next Hop. 
 This issue can be minimized by first removing the node from BGP Peering. 
 
-### Cilium Upgrade
+### Isovalent Networking for Kubernetes Upgrade
 
 The BFD and BGP Process are running on the Cilium POD. Restarting the Cilium POD for any reason will result in the BFD adjacency to go down however, thanks to BGP Graceful Restart the impact is minimal.
 

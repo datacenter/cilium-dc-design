@@ -24,7 +24,7 @@ This basic design gives us the following capabilities:
 * Secure the traffic initiated by the Kubernetes nodes with ACI contracts.
 
     {: .note }
-    Cilium offers the capability to implement micro-segmentation rules (via [CiliumNetworkPolicies](https://docs.cilium.io/en/latest/security/policy/index.html)) directly within the cluster. However, the specifics of its design and configuration fall outside the scope of this document.
+    Cilium offers the capability to implement micro-segmentation rules (via [CiliumNetworkPolicies](https://docs.cilium.io/en/stable/security/policy/index.html)) directly within the cluster. However, the specifics of its design and configuration fall outside the scope of this document.
 
 * Secure the traffic initiated by POD natted to an Egress IP with ACI contracts.
 * DHCP relay support: This design allows the Kubernetes nodes to be bootstrapped without the need to manually configure their IP addresses easing the cluster bootstrap and horizontal scalability. 
@@ -65,13 +65,13 @@ To ensure return traffic is routed back to the L3OUT we can do the following on 
 Cilium BGP Control Plane traffic flows
 
 {: .note }
-For the nodes with multiple network interfaces is fundamental to ensure that the kubelet’s node-ip is set correctly on each node. In the Simplicity Design this has to be the Interface placed in the ACI EPG.
+For the nodes with multiple network interfaces it is fundamental to ensure that the [kubelet’s node-ip is set correctly on each node](https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/#create-the-config-file). In the Simplicity Design this has to be the Interface placed in the ACI EPG.
 Cilium does not have the ability to chose which interface is used for pod to pod E/W routing and will use the kubelet’s node IP.
 
 
 Refer to the [ACI BGP Design](/cilium-dc-design/docs/aci/aci_bgp_design/) section for details on how to configure ACI.
 
-## Cilium BGP design
+## Isovalent Networking for Kubernetes BGP design
 
 When it comes to the Cilium BGP design, the only consideration is how many `ingress nodes` to deploy and whether to dedicate them only for this purpose.
 
@@ -83,11 +83,11 @@ Depending on the cluster scale and application requirements, dedicated `ingress 
 * Limit the number of `ingress nodes`: By having dedicated `ingress nodes`, we can ensure that all the bandwidth and compute are dedicated to the ingress function.
 * Reduced number of BGP peerings. As only a subnet of nodes establish BGP peering with the fabric, the management overhead is reduced.
 
-* Specialized hardware: not all the nodes in a Kubernetes clusters need to be the same; specialized high-performance hardware can be utilized for our `ingress nodes`. For example, thanks to [CiliumNodeConfig](https://docs.cilium.io/en/latest/configuration/per-node-config/#per-node-configuration), we can deploy bare-metal nodes with either Mellanox or Intel network interface cards and achieve 100+ Gbps throughput per ingress node, thanks to [Cilium Big TCP](https://docs.cilium.io/en/stable/operations/performance/tuning/#ipv4-big-tcp) capability.
+* Specialized hardware: not all the nodes in a Kubernetes clusters need to be the same; specialized high-performance hardware can be utilized for our `ingress nodes`. For example, thanks to [CiliumNodeConfig](https://docs.cilium.io/en/stable/configuration/per-node-config/#per-node-configuration), we can deploy bare-metal nodes with either Mellanox or Intel network interface cards and achieve 100+ Gbps throughput per ingress node, thanks to [Cilium Big TCP](https://docs.cilium.io/en/stable/operations/performance/tuning/#ipv4-big-tcp) capability.
 
 Refer to the [Example configuration](../examples/examples/) section of this document for implementation details.
 
-## Cilium Egress design
+## Isovalent Networking for Kubernetes Egress design
 
 When it comes to the Cilium Egress design, the only consideration is how many `egress nodes` to deploy and whether to dedicate them only for this purpose.
 Ideally, the design should have a minimum of two `egress nodes` distributed between two pairs of leaves. This will provide redundancy in case of `egress nodes` or ACI leaf failure or during upgrades.
@@ -118,7 +118,7 @@ The Egress Gateway feature can be configured to advertise the egress IP via BGP,
 
 This design aims to provide you with an easy and high scalable design; however, it comes with the following drawbacks:
 
-1. External services can only be advertised as “Cluster Scope”: since all the incoming traffic has to pass through a subset of Kubernetes nodes, we need to be able to perform a second-stage load balancing to reach the “correct” node.
+1. External services can only be advertised with an `externalTrafficPolicy` of type  [“Cluster”](https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy): since all the incoming traffic has to pass through a subset of Kubernetes nodes, we need to be able to perform a second-stage load balancing to reach the “correct” node.
 2. Potential bottle necks for ingress/egress traffic
 3. BGP cannot be used to advertise the Pod subnets.
 4. Ingress nodes have two interfaces with different route tables, this adds additional complexity.

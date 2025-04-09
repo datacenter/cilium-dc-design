@@ -6,7 +6,7 @@ nav_order: 3
 
 # What is Tetragon?
 
-Cilium Tetragon component enables powerful realtime, eBPF-based Security Observability and Runtime Enforcement.
+Isovalent Networking for Kubernetes Tetragon component enables powerful realtime, eBPF-based Security Observability and Runtime Enforcement.
 
 Tetragon detects and is able to react to security-significant events, such as
 
