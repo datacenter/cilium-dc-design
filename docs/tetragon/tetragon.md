@@ -40,3 +40,5 @@ Many of the Tetragon developers are also kernel developers. By leveraging this k
 ## eBPF Kernel Aware
 Tetragon, through eBPF, has access to the Linux kernel state. Tetragon can then join this kernel state with Kubernetes awareness or user policy to create rules enforced by the kernel in real time. This allows annotating and enforcing process namespace and capabilities, sockets to processes, process file descriptor to filenames and so on. For example, when an application changes its privileges we can create a policy to trigger an alert or even kill the process before it has a chance to complete the syscall and potentially run additional syscalls.
 
+[Next](/cilium-dc-design/docs/tetragon/openshift/openshift/){: .btn }
+{: .text-right }

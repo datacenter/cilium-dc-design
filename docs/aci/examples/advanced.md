@@ -437,5 +437,5 @@ spec:
 These two `egressIPs` can now easily be mapped in an External EPG or ESG. This allows for administrators to control access per application by using contracts. This example shows access control per namespace, but this can also be narrowed down further to a subset of pods.
 
 
-[Next](/cilium-dc-design/docs/aci/examples/simple/){: .btn }
+[Next](/cilium-dc-design/docs/tetragon/tetragon/){: .btn }
 {: .text-right }

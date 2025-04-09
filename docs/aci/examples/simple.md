@@ -387,3 +387,6 @@ spec:
 ```
 
 These two `egressIPs` can now easily be mapped by using an IP selector on the ESG. This allows for administrators to control access per application by using contracts. This example shows access control per namespace, but this can also be narrowed down further to a subset of pods. Pods in the `egress-1` namespace will egress the cluster via the `egressIPs` specified in the `IsoValentEgressGatewayPolicy`.
+
+[Next](/cilium-dc-design/docs/aci/examples/advanced/){: .btn }
+{: .text-right }
